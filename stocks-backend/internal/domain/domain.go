@@ -10,4 +10,7 @@ var (
 
 type StocksService interface {
 	PopulateDatabase() error
+	GetStocks(filter GetStocksFilter) ([]StockDTO, error)
+	GetActions() ([]ActionDTO, error)
+	GetRatings() ([]RatingDTO, error)
 }

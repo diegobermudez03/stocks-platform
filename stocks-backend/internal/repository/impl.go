@@ -25,3 +25,22 @@ func (r *StocksPostgresRepo) GetRecordsCount() (int64, error){
 	err := r.db.Model(&domain.StockModel{}).Count(&count).Error
 	return count, err
 }
+
+func (r *StocksPostgresRepo) GetRatings()([]domain.ParamValueModel, error){
+	var ratings []domain.ParamValueModel
+	err := r.db.Model(&domain.StockModel{}).
+		Select("rating_from as Value, COUNT(*) as Count").
+		Group("rating_from").
+		Scan(&ratings).Error
+	return ratings, err
+}
+
+
+func (r *StocksPostgresRepo) GetActions()([]domain.ParamValueModel, error){
+	var ratings []domain.ParamValueModel
+	err := r.db.Model(&domain.StockModel{}).
+		Select("action as Value, COUNT(*) as Count").
+		Group("action").
+		Scan(&ratings).Error
+	return ratings, err
+}

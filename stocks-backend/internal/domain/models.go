@@ -18,3 +18,8 @@ type StockModel struct {
 	RatingTo 	string 
 	Time 		time.Time
 }
+
+type ParamValueModel struct{
+	Value 	string 
+	Count 	int64
+}
