@@ -1,6 +1,7 @@
 package transport
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/diegobermudez03/stocks-platform/stocks-backend/internal/domain"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 )
 
 type ServerConfig struct {
@@ -29,10 +31,14 @@ func NewRestAPIServer(config ServerConfig, service domain.StocksService) *RestAP
 
 func (s *RestAPIServer) Run() error{
 	router := chi.NewRouter()
-	
+	/*
+		Suscribe routes handlers
+	*/
 	router.Get("/ratings", s.getRatings)
 	router.Get("/actions", s.getActions)
 	router.Get("/stocks", s.getStocks)
+	router.Get("/stocks/{id}", s.getStockData)
+
 	log.Printf("Starting server at port: %s", s.config.Port)
 	return http.ListenAndServe(fmt.Sprintf(":%s", s.config.Port), router)
 }
@@ -91,4 +97,26 @@ func (s *RestAPIServer) getStocks(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	WriteJSON(w, http.StatusOK, stocks)
+}
+
+/*
+	Endpoint which retrieves the full information for a stock, including company profile and news
+*/
+func (s *RestAPIServer) getStockData(w http.ResponseWriter, r *http.Request){
+	stockId := chi.URLParam(r, "id")
+	if stockId == ""{
+		WriteError(w, http.StatusBadRequest, errors.New("invalid stock id"))
+		return
+	}
+	uuidId, err := uuid.Parse(stockId)
+	if err != nil{
+		WriteError(w, http.StatusBadRequest, errors.New("invalid stock id"))
+		return
+	}
+	info, err := s.service.GetStockFullData(uuidId)
+	if err != nil{
+		WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+	WriteJSON(w, http.StatusOK, info)
 }

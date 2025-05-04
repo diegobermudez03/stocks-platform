@@ -20,6 +20,8 @@ const(
 	DB_PASSWORD = "DB_PASSWORD" 
 	DB_DBNAME = "DB_DBNAME"
 	DB_SSL_MODE = "DB_SSL_MODE"
+	EXTERNAL_API_URL = "EXTERNAL_API_URL"
+	EXTERNAL_API_KEY = "EXTERNAL_API_KEY"
 )
 
 
@@ -52,7 +54,7 @@ func main() {
 		log.Fatalf("Unable to connect to db: %s", err.Error())
 	}
 	repo := repository.NewStocksPostgresRepo(db)
-	service := service.NewStocksService(repo, os.Getenv(API_URL), os.Getenv(API_TOKEN))
+	service := service.NewStocksService(repo, os.Getenv(API_URL), os.Getenv(API_TOKEN), os.Getenv(EXTERNAL_API_URL), os.Getenv(EXTERNAL_API_KEY))
 	if err := service.PopulateDatabase(); err != nil{
 		log.Fatalf("Unable to populate db with API data: %s", err.Error())
 	}

@@ -7,3 +7,5 @@ DB_USER=stocks
 DB_PASSWORD=stocks 
 DB_DBNAME=stocks
 DB_SSL_MODE=disable
+EXTERNAL_API_URL=http://external_source_url_for_more_data
+EXTERNAL_API_KEY=external_api_key

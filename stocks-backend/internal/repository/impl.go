@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/diegobermudez03/stocks-platform/stocks-backend/internal/domain"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -18,7 +19,6 @@ func NewStocksPostgresRepo(db *gorm.DB) StocksRepo{
 func (r *StocksPostgresRepo) CreateStockRecord(stock domain.StockModel) error {
 	return r.db.Create(&stock).Error
 }
-
 
 func (r *StocksPostgresRepo) GetRecordsCount() (int64, error){
 	var count int64
@@ -43,4 +43,47 @@ func (r *StocksPostgresRepo) GetActions()([]domain.ParamValueModel, error){
 		Group("action").
 		Scan(&ratings).Error
 	return ratings, err
+}
+
+func (r *StocksPostgresRepo) GetStocks(filter domain.GetStocksFilterModel)([]domain.StockModel, error){
+	var stocks []domain.StockModel
+	query := r.db.Model(&domain.StockModel{})
+	query.Offset(filter.Page * filter.Size).Limit(filter.Size)
+	query.Limit(filter.Size)
+	if filter.TextSearch != ""{
+		query = query.Where("ticker ILIKE ? OR company ILIKE ?", "%"+filter.TextSearch+"%", "%"+filter.TextSearch+"%")
+	}
+	if len(filter.RatingFromList) > 0{
+		query = query.Where("rating_from IN ?", filter.RatingFromList)
+	}
+	if len(filter.RatingToList) > 0{
+		query = query.Where("rating_to IN ?", filter.RatingToList)
+	}
+	if filter.TimeStart != nil{
+		query = query.Where("time >= ?", *filter.TimeStart)
+	}
+	if filter.TimeEnd != nil{
+		query = query.Where("time <= ?", *filter.TimeEnd)
+	}
+	if len(filter.ActionList) > 0{
+		query = query.Where("action IN ?", filter.ActionList)
+	}
+	if filter.TargetStart != nil{
+		query = query.Where("target_from >= ?", *filter.TargetStart)
+	}
+	if filter.TargetEnd != nil{
+		query = query.Where("target_to <= ?", *filter.TargetEnd)
+	}
+	if filter.Sort != ""{
+		query = query.Order(filter.Sort)
+	}
+	err := query.Find(&stocks).Error
+	return stocks, err
+}
+
+
+func (r *StocksPostgresRepo) GetStockById(id uuid.UUID) (*domain.StockModel, error){
+	stockModel := new(domain.StockModel)
+	err := r.db.Where("id = ?", id).First(stockModel).Error
+	return stockModel, err
 }
