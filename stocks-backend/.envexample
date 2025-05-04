@@ -1,0 +1,3 @@
+API_TOKEN=token-for-stocks-api
+PORT=8000
+API_URL=https://mockstocksapi.com/list
