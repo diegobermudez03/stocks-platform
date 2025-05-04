@@ -1,6 +1,6 @@
 package service
 
-type StockAPIRecord struct {
+type StockAPIRecordDTO struct {
 	Ticker     string `json:"ticker"`
 	TargetFrom string `json:"target_from"`
 	TargetTo   string `json:"target_to"`
@@ -10,4 +10,9 @@ type StockAPIRecord struct {
 	RatingFrom string `json:"rating_from"`
 	RatingTo   string `json:"rating_to"`
 	Time       string `json:"time"`
+}
+
+type StocksAPIResponseDTO struct {
+	Items    []StockAPIRecordDTO `json:"items"`
+	NextPage string              `json:"next_page"`
 }

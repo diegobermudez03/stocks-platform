@@ -1,3 +1,9 @@
 API_TOKEN=token-for-stocks-api
 PORT=8000
 API_URL=https://mockstocksapi.com/list
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=stocks
+DB_PASSWORD=stocks 
+DB_DBNAME=stocks
+DB_SSL_MODE=disable

@@ -6,6 +6,7 @@ import (
 
 	"fmt"
 
+	"github.com/diegobermudez03/stocks-platform/stocks-backend/internal/domain"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -15,11 +16,13 @@ type ServerConfig struct {
 
 type RestAPIServer struct {
 	config ServerConfig
+	service domain.StocksService
 }
 
-func NewRestAPIServer(config ServerConfig) *RestAPIServer {
+func NewRestAPIServer(config ServerConfig, service domain.StocksService) *RestAPIServer {
 	return &RestAPIServer{
 		config: config,
+		service: service,
 	}
 }
 
