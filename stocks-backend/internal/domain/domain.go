@@ -19,4 +19,5 @@ type StocksService interface {
 	GetActions() ([]ActionDTO, error)
 	GetRatings() ([]RatingDTO, error)
 	GetStockFullData(stockId uuid.UUID) (*StockDataDTO, error)
+	GetRecommendations()([]RecommendationDTO, error)
 }

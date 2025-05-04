@@ -38,3 +38,10 @@ type GetStocksFilterModel struct{
 	TargetStart    *float64
 	TargetEnd      *float64
 }
+
+type StockWithScore struct{
+	Score 			float64
+	AvrgSentiment	float64 
+	PercentageIncrease float64
+	Stock StockModel
+}

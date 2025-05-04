@@ -87,3 +87,13 @@ func (r *StocksPostgresRepo) GetStockById(id uuid.UUID) (*domain.StockModel, err
 	err := r.db.Where("id = ?", id).First(stockModel).Error
 	return stockModel, err
 }
+
+
+func (r *StocksPostgresRepo) GetBasicTopStocks() ([]domain.StockModel, error){
+	var stocks []domain.StockModel
+	err := r.db.Model(&domain.StockModel{}).
+		Order("((target_to - target_from)/target_from*100) DESC"). 
+		Limit(30).
+		Find(&stocks).Error
+	return stocks, err
+}

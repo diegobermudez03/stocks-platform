@@ -80,3 +80,11 @@ type NewsDTO struct{
 	Source string `json:"source"`
 	Summary string `json:"summary"`
 }
+
+
+type RecommendationDTO struct{
+	StockDTO `json:"stock"`
+	RecommendationScore float64 `json:"recommendation_score"`
+	AvrgSentiment	float64 	`json:"avrg_sentiment"`
+	PercentageIncrease float64 `json:"percentage_increase"`
+}

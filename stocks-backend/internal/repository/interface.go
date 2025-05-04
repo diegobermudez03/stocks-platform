@@ -12,4 +12,5 @@ type StocksRepo interface {
 	GetActions()([]domain.ParamValueModel, error)
 	GetStocks(filter domain.GetStocksFilterModel)([]domain.StockModel, error)
 	GetStockById(id uuid.UUID) (*domain.StockModel, error)
+	GetBasicTopStocks() ([]domain.StockModel, error)
 }

@@ -95,18 +95,7 @@ func (s *StocksServiceImpl) GetStocks(filter domain.GetStocksFilter) ([]domain.S
 	}
 	stocksDTO := make([]domain.StockDTO, len(stocks))
 	for i, stock := range stocks{
-		stocksDTO[i] = domain.StockDTO{
-			ID: stock.ID,
-			Ticker: stock.Ticker,
-			TargetFrom: stock.TargetFrom,
-			TargetTo: stock.TargetTo,
-			Company: stock.Company,
-			Action: stock.Action,
-			Brokerage: stock.Brokerage,
-			RatingFrom: stock.RatingFrom,
-			RatingTo: stock.RatingTo,
-			Time: stock.Time,
-		}
+		stocksDTO[i] = *s.stockModelToDTO(&stock)
 	}
 	return stocksDTO, nil
 }
@@ -190,4 +179,23 @@ func (s *StocksServiceImpl)  GetStockFullData(stockId uuid.UUID) (*domain.StockD
 	}
 	stockData.News = newsDTO
 	return stockData, nil
+}
+
+
+/*
+	Internal method to convert models to DTO
+*/
+func (s *StocksServiceImpl) stockModelToDTO(model *domain.StockModel) *domain.StockDTO{
+	return &domain.StockDTO{
+		ID: model.ID,
+		Ticker: model.Ticker,
+		TargetFrom: model.TargetFrom,
+		TargetTo: model.TargetTo,
+		Company: model.Company,
+		Action: model.Action,
+		Brokerage: model.Brokerage,
+		RatingFrom: model.RatingFrom,
+		RatingTo: model.RatingTo,
+		Time: model.Time,
+	}
 }

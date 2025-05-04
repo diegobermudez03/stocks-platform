@@ -44,3 +44,13 @@ type InternalNewsDTO struct {
 	Summary  string `json:"summary"`
 	URL      string `json:"url"`
 }
+
+type InternalSentimentDTO struct {
+	Data []struct {
+		Symbol string  `json:"symbol"`
+		Year   int     `json:"year"`
+		Month  int     `json:"Month"`
+		Change float64 `json:"change"`
+		Mspr   float64 `json:"mspr"`
+	} `json:"data"`
+}

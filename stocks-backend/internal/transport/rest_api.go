@@ -38,9 +38,12 @@ func (s *RestAPIServer) Run() error{
 	router.Get("/actions", s.getActions)
 	router.Get("/stocks", s.getStocks)
 	router.Get("/stocks/{id}", s.getStockData)
+	router.Get("/recommendations", s.GetRecommendations)
 
 	log.Printf("Starting server at port: %s", s.config.Port)
-	return http.ListenAndServe(fmt.Sprintf(":%s", s.config.Port), router)
+	r := chi.NewRouter()
+	r.Mount("/api/v1", router)
+	return http.ListenAndServe(fmt.Sprintf(":%s", s.config.Port), r)
 }
 
 
@@ -119,4 +122,17 @@ func (s *RestAPIServer) getStockData(w http.ResponseWriter, r *http.Request){
 		return
 	}
 	WriteJSON(w, http.StatusOK, info)
+}
+
+
+/*
+	Endpoint to retrieve the recommendations
+*/
+func (s *RestAPIServer) GetRecommendations(w http.ResponseWriter, r *http.Request){
+	recommendations, err := s.service.GetRecommendations()
+	if err != nil{
+		WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+	WriteJSON(w, http.StatusOK, recommendations)
 }
