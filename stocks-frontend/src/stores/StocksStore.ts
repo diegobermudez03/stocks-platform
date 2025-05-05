@@ -5,6 +5,10 @@ import type { StockModel } from '@/models/StockModel'
 import type { ParamModel } from '@/models/ParamModel'
 
 export const stocksStore = defineStore('stocks', ()=>{
+    const greenRatings : string[] = ["Positive", "Speculative Buy", "Overweigh", "Market Outperform", "Outperform", "Sector Outperform", "Buy", "Strong-Buy"]
+    const yellowRatings: string[]=["Sector Perform", "Hold", "Market Perform", "In-Line", "Sector Weight", "Equal Weight", "Peer Perform", "Neutral", "Unchanged"]
+    const orangeRatings: string[]=["Cautious", "Sector Underperform", "Underperform", "Under Perform", "Underweight"]
+    const redRatings: string[] =["Negative", "Sell", "Unchanged", "Reduce", "Neutral", "Overweight"]
 
     //for filters
     const searchQuery = ref<string| null>(null)
@@ -168,6 +172,6 @@ export const stocksStore = defineStore('stocks', ()=>{
         pages, changePage, getParams, loadingFilter, actions, ratings, 
         filterError, expandedStock, expandStock, closeStock,
         searchQuery, fromPrice, toPrice, selectedRatingsFrom, selectedRatingsTo, selectedActions,
-        toggleFilter, openFilter, activeFilters
+        toggleFilter, openFilter, activeFilters, greenRatings, yellowRatings, orangeRatings, redRatings
     }
 })

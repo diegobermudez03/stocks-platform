@@ -28,8 +28,8 @@ type GetStocksFilter struct {
 type StockDTO struct {
 	ID uuid.UUID	`json:"id"`
 	Ticker string	`json:"ticker"`
-	TargetFrom float64	`json:"target_to"`
-	TargetTo float64	`json:"target_from"`
+	TargetFrom float64	`json:"target_from"`
+	TargetTo float64	`json:"target_to"`
 	Company string	`json:"company"`
 	Action string	`json:"action"`
 	Brokerage string	`json:"brokerage"`
@@ -56,8 +56,7 @@ type ActionDTO struct {
 
 
 type StockDataDTO struct{
-	ID	 uuid.UUID	`json:"id"`
-	Ticker string	`json:"ticker"`
+	Stock StockDTO `json:"stock"`
 	CompanyProfile CompanyProfileDTO `json:"company_profile"`
 	News []NewsDTO `json:"news"`
 }

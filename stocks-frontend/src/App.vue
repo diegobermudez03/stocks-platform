@@ -4,10 +4,10 @@
   </main>
   <footer class="relative mt-20 bg-gray-900 px-4 pt-20">
     <nav aria-label="Footer Navigation" class="mx-auto mb-10 flex max-w-lg flex-col gap-10 text-center sm:flex-row sm:text-left">
-      <a href="#" class="font-medium text-white">Github Repository</a>
-      <a href="#" class="font-medium text-white">Linkedin Profile</a>
-      <a href="#" class="font-medium text-white">Ig Profile</a>
-      <a href="#" class="font-medium text-white">Youtube</a>
+      <a href="https://github.com/diegobermudez03/stocks-platform" class="font-medium text-white">Github Repository</a>
+      <a href="https://www.linkedin.com/in/dbermu/" class="font-medium text-white">Linkedin Profile</a>
+      <a href="https://www.instagram.com/diego_bermudezjimenez/" class="font-medium text-white">Ig Profile</a>
+      <a href="https://www.youtube.com/@johndb7861" class="font-medium text-white">Youtube</a>
     </nav>
     <p class="py-10 text-center text-gray-300">© 2025 Juan Diego Bermúdez Jiménez</p>
   </footer>

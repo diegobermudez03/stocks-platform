@@ -117,8 +117,7 @@ func (s *StocksServiceImpl) getCompanyProfile(stock *domain.StockModel)(*domain.
 
 	//construct the preview payload, since if the news fail, we will still return succesfully
 	stockData := domain.StockDataDTO{
-		ID: stock.ID,
-		Ticker: stock.Ticker,
+		Stock: *s.stockModelToDTO(stock),
 		CompanyProfile: domain.CompanyProfileDTO{
 			Country: companyProfile.Country,
 			Currency: companyProfile.Currency,

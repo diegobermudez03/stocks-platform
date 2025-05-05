@@ -3,7 +3,25 @@
 @tailwind utilities;
 
 @layer base {
-    body {
-      @apply font-sans; 
-    }
+  body {
+    @apply font-sans; 
   }
+}
+
+.overflow-x-auto::-webkit-scrollbar {
+  height: 6px;
+}
+  
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3); 
+  border-radius: 10px; 
+}
+  
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1); 
+  border-radius: 10px; 
+}
+  
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.5); 
+}

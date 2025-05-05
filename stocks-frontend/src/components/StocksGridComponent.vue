@@ -5,10 +5,57 @@
         <!--print stocks-->
         <div class=" flex flex-col flex-grow max-w-200 items-center">
             <!--print stocks-->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-                <div class="flex flex-col min-h-[150px] w-[400px] bg-white border border-gray-200 shadow-2xs rounded-xl" v-for="stock in store.stocks" :key="stock.id">
+            <div class="mt-3 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div 
+                class="flex flex-col min-h-[150px] w-[400px] bg-white border-gray-600 shadow-2xs rounded-xl border-2 hover:bg-gray-200 hover:shadow-xl" 
+                v-for="stock in store.stocks" :key="stock.id">
                     <div class="p-4 md:p-5">
-                        <h3 class="text-lg font-bold text-gray-800">{{ stock.ratingFrom }}</h3>
+                        <div class=" flex flex-row justify-between">
+                            <h3 class=" text-3xl font-bold text-gray-800">{{ stock.ticker }}</h3>
+                            <div class=" flex flex-row">
+                                <svg v-if="stock.percentage > 0" width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="green" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="19" x2="12" y2="5"/>
+                                    <polyline points="5 12 12 5 19 12"/>
+                                </svg>
+                                <svg v-else width="30" height="30" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="red" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19"/>
+                                    <polyline points="5 12 12 19 19 12"/>
+                                </svg>
+                                <h2 class= " text-2xl font-semibold" :class="{'text-green-600': stock.percentage>0, 'text-red-500': stock.percentage<=0}"> {{ (stock.percentage>0 ? '+': '') + stock.percentage.toFixed(2) + '%' }}</h2>
+                            </div>
+                        </div>
+                        <h3>{{'Company: ' +stock.company }}</h3>
+                        <h3>{{'Action: ' +stock.action }}</h3>
+                        <h3>{{'Brokerage: ' +stock.brokerage }}</h3>
+                        <h3>{{'Time: ' +stock.time.toDateString() + ' ' + stock.time.getHours() + ':' + stock.time.getMinutes() }}</h3>
+                        <hr class=" border-[1px] border-gray-400 mt-4"/>
+                        <div class=" flex flex-row  items-center justify-center gap-4">
+                            <div class=" flex flex-col items-center font-semibold text-lg my-2">
+                                <h3 :class="{
+                                    'text-green-600' : store.greenRatings.includes(stock.ratingFrom),
+                                    'text-yellow-600' : store.yellowRatings.includes(stock.ratingFrom),
+                                    'text-orange-600' : store.orangeRatings.includes(stock.ratingFrom),
+                                    'text-red-600' : store.redRatings.includes(stock.ratingFrom),
+                                }">{{ stock.ratingFrom }}</h3>
+                                <h3 class=" text-2xl font-semibold">{{ '$' + stock.targetFrom.toFixed(2) }}</h3>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="30" height="30">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M13 6l6 6-6 6" />
+                            </svg>
+                            <div class=" flex flex-col items-center font-semibold text-lg my-2">
+                                <h3 :class="{
+                                    'text-green-600' : store.greenRatings.includes(stock.ratingTo),
+                                    'text-yellow-600' : store.yellowRatings.includes(stock.ratingTo),
+                                    'text-orange-600' : store.orangeRatings.includes(stock.ratingTo),
+                                    'text-red-600' : store.redRatings.includes(stock.ratingTo),
+                                }">{{ stock.ratingTo }}</h3>
+                                <h3 class=" text-2xl font-semibold">{{ '$' + stock.targetTo.toFixed(2) }}</h3>
+                            </div>
+                        </div>
+                      
+                        <button class=" bg-gray-100 text-gray-800 shadow-md border-[1px] border-gray-600 hover:bg-gray-200 rounded-lg py-1 w-full">
+                            See more
+                        </button>
                     </div>
                 </div>
             </div>

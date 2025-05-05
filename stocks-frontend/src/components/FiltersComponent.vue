@@ -1,7 +1,7 @@
 <template>
-    <div class=" bg-gray-700 flex flex-col gap-3 h-fit">
+    <div class=" bg-gray-700 grid grid-cols-1 md:grid-cols-2 gap-3 h-fit items-center">
         <!--search bar-->
-        <div class=" flex items-center justify-center min-h-[10vh] w-screen px-5 bg-transparent">
+        <div class=" flex items-center justify-center min-h-[10vh] px-5 bg-transparent">
             <div class=" flex rounded-full bg-white px-2 w-full max-w-[600px]">
                 <input 
                     type="text"
@@ -19,7 +19,6 @@
                 </button>
             </div>
         </div>
-        
         <!--FILTERS-->
         <div class=" flex flex-row justify-center p-3 gap-10">
             <!-- Target price filter -->
@@ -47,7 +46,7 @@
                             type="number"
                             id="FromPrice"
                             value="0"
-                            class="mt-0.5 w-full rounded-lg border-gray-300 shadow-md sm:text-sm px-2 py-1"
+                            class="mt-0.5 w-full rounded-lg border-gray-600 border-[1px] shadow-md sm:text-sm px-2 py-1"
                             v-model="store.fromPrice"
                         />
                         </label>
@@ -57,7 +56,7 @@
                             type="number"
                             id="ToPrice"
                             value="10"
-                            class="mt-0.5 w-full rounded-lg border-gray-300 shadow-md sm:text-sm px-2 py-1"
+                            class="mt-0.5 w-full rounded-lg border-gray-600 border-[1px] shadow-md sm:text-sm px-2 py-1"
                             v-model="store.toPrice"
                         />
                         </label>
@@ -91,7 +90,7 @@
                             <div class="flex flex-col justify-center items-start gap-3">
                                 <label v-for="rating in store.ratings" :key="rating.name" :for="rating.name" class="inline-flex items-center gap-3">
                                     <input type="checkbox" class="size-5 rounded-lg border-gray-300 shadow-sm" :id="rating.name"  :value="rating.name" v-model="store.selectedRatingsFrom"/>
-                                    <span class="text-sm font-medium text-gray-700"> {{rating.name}} </span>
+                                    <span class="text-sm font-medium text-gray-700"> {{rating.name + ' (' +rating.count + ')' }} </span>
                                 </label>
                                 <button class=" px-5 py-2 bg-gray-700 text-white hover:bg-gray-900 rounded-lg m-3" @click="store.retrieveStocks">
                                     Apply
@@ -124,7 +123,7 @@
                         <div class="flex flex-col justify-center items-start gap-3">
                             <label v-for="rating in store.ratings" :key="rating.name" :for="rating.name" class="inline-flex items-center gap-3">
                                 <input type="checkbox" class="size-5 rounded-lg border-gray-300 shadow-sm" :id="rating.name" :value="rating.name" v-model="store.selectedRatingsTo"/>
-                                <span class="text-sm font-medium text-gray-700"> {{rating.name}} </span>
+                                <span class="text-sm font-medium text-gray-700"> {{rating.name + ' (' +rating.count + ')'}} </span>
                             </label>
                             <button class=" px-5 py-2 bg-gray-700 text-white hover:bg-gray-900 rounded-lg m-3"  @click="store.retrieveStocks">
                                 Apply
@@ -158,7 +157,7 @@
                             <label v-for="action in store.actions" :key="action.name" :for="action.name" class="inline-flex items-center gap-3" >
                                 <input type="checkbox" class="size-5 rounded border-gray-300 shadow-sm" 
                                 :id="action.name" :value="action.name" v-model="store.selectedActions"/>
-                                <span class="text-sm font-medium text-gray-700"> {{action.name}} </span>
+                                <span class="text-sm font-medium text-gray-700"> {{action.name  + ' (' +action.count + ')' }} </span>
                             </label>
                             <button class=" px-5 py-2 bg-gray-700 text-white hover:bg-gray-900 rounded-lg m-3"  @click="store.retrieveStocks">
                                 Apply
@@ -168,9 +167,10 @@
                 </div>
             </div>
         </div>
-        <!--SELECTED FILTERS-->
-        <div class=" flex flex-row gap-5 p-5 items-center justify-center">
-            <button class=" flex flex-row items-center bg-slate-900 text-white border-gray-500 border-2 shadow-md rounded-2xl px-5 py-3"
+    </div>
+    <!--SELECTED FILTERS-->
+    <div class=" overflow-x-auto w-full flex flex-row gap-5 items-center justify-center bg-gray-700">
+            <button class=" flex flex-row my-3 items-center bg-slate-900 text-white border-gray-500 border-2 shadow-md rounded-2xl px-5 py-3"
             v-for="filter in store.activeFilters" @click="()=>{filter.onRemove(); store.retrieveStocks()}">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -179,7 +179,6 @@
             {{ filter.label }}
             </button>
         </div>
-    </div>
 </template>
 
 
