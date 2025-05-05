@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { getActions, getRatings, getStocks, type Result } from '@/services/stockServices'
 import type { StockModel } from '@/models/StockModel'
 import type { ParamModel } from '@/models/ParamModel'
+import router from '@/router'
 
 export const stocksStore = defineStore('stocks', ()=>{
     const greenRatings : string[] = ["Positive", "Speculative Buy", "Overweigh", "Market Outperform", "Outperform", "Sector Outperform", "Buy", "Strong-Buy"]
@@ -167,11 +168,16 @@ export const stocksStore = defineStore('stocks', ()=>{
         return filters;
     })
 
+    async function openStock(id: string){
+        router.push({name:'stockDetail', params:{
+            id: id
+        }})
+    }
     return {
         stocks, size, page, loading, errorMessage, retrieveStocks, 
         pages, changePage, getParams, loadingFilter, actions, ratings, 
         filterError, expandedStock, expandStock, closeStock,
         searchQuery, fromPrice, toPrice, selectedRatingsFrom, selectedRatingsTo, selectedActions,
-        toggleFilter, openFilter, activeFilters, greenRatings, yellowRatings, orangeRatings, redRatings
+        toggleFilter, openFilter, activeFilters, greenRatings, yellowRatings, orangeRatings, redRatings,openStock
     }
 })

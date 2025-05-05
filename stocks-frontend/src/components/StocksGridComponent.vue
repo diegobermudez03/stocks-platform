@@ -8,7 +8,7 @@
             <div class="mt-3 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 <div 
                 class="flex flex-col min-h-[150px] w-[400px] bg-white border-gray-600 shadow-2xs rounded-xl border-2 hover:bg-gray-200 hover:shadow-xl" 
-                v-for="stock in store.stocks" :key="stock.id">
+                v-for="stock in store.stocks" :key="stock.id"  @click="store.openStock(stock.id)">
                     <div class="p-4 md:p-5">
                         <div class=" flex flex-row justify-between">
                             <h3 class=" text-3xl font-bold text-gray-800">{{ stock.ticker }}</h3>
@@ -53,7 +53,7 @@
                             </div>
                         </div>
                       
-                        <button class=" bg-gray-100 text-gray-800 shadow-md border-[1px] border-gray-600 hover:bg-gray-200 rounded-lg py-1 w-full">
+                        <button class=" bg-gray-100 text-gray-800 shadow-md border-[1px] border-gray-600 hover:bg-gray-200 rounded-lg py-1 w-full" @click="store.openStock(stock.id)">
                             See more
                         </button>
                     </div>

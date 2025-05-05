@@ -1,4 +1,5 @@
 import type { RecommendationModel } from "@/models/RecommendationModel";
+import router from "@/router";
 import { getRecommendations } from "@/services/stockServices";
 import { defineStore } from "pinia";
 import { ref } from "vue";
@@ -19,10 +20,17 @@ export const recommendationsStore = defineStore('recommendations', () => {
         loading.value = false
     }
 
+    async function openStock(id: string){
+        router.push({name:'stockDetail', params:{
+            id: id
+        }})
+    }
+
     return {
         recommendations, 
         loading, 
         errorMessage, 
-        retrieveRecommendations
+        retrieveRecommendations,
+        openStock
     }
 })

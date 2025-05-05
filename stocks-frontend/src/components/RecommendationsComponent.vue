@@ -2,7 +2,7 @@
     <h1 class=" bg-gray-900 text-gray-300 text-center pt-2 font-semibold text-lg">Our top recommendations</h1>
     <div class=" overflow-x-auto w-full sticky top-0">
         <div class=" flex flex-row spacex-4 min-w-max">
-            <button v-if="store.recommendations.length > 0" v-for="recommendation in store.recommendations" :key="recommendation.id"  
+            <button v-if="store.recommendations.length > 0" v-for="recommendation in store.recommendations" :key="recommendation.id"  @click="store.openStock(recommendation.id)"
                 class=" flex flex-col bg-gray-900 text-white px-10 border-x-[1px] border-gray-500 w-[400px] py-3 hover:bg-gray-950">
                 <div class=" flex flex-row justify-between">
                   <h2 class=" text-2xl font-bold">{{ recommendation.ticker }}</h2>
