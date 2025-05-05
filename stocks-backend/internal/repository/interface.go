@@ -7,6 +7,7 @@ import (
 
 type StocksRepo interface {
 	CreateStockRecord(stock domain.StockModel) error 
+	GetCountWithFilter(filter domain.GetStocksFilterModel) (int64, error)
 	GetRecordsCount() (int64, error)
 	GetRatings()([]domain.ParamValueModel, error)
 	GetActions()([]domain.ParamValueModel, error)

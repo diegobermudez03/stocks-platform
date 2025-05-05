@@ -77,7 +77,7 @@ func (s *StocksServiceImpl) GetStocks(filter domain.GetStocksFilter) (*domain.St
 	if filter.TargetEnd != 0{
 		targetEnd = &filter.TargetEnd
 	}
-	stocks, err := s.repo.GetStocks(domain.GetStocksFilterModel{
+	filterModel := domain.GetStocksFilterModel{
 		Page: filter.Page,
 		Size: filter.Size,
 		TextSearch: filter.TextSearch,
@@ -89,7 +89,8 @@ func (s *StocksServiceImpl) GetStocks(filter domain.GetStocksFilter) (*domain.St
 		ActionList: filter.ActionList,
 		TargetStart: targetStart,
 		TargetEnd: targetEnd,
-	})
+	}
+	stocks, err := s.repo.GetStocks(filterModel)
 	if err != nil{
 		return nil, err
 	}
@@ -97,7 +98,7 @@ func (s *StocksServiceImpl) GetStocks(filter domain.GetStocksFilter) (*domain.St
 	for i, stock := range stocks{
 		stocksDTO[i] = *s.stockModelToDTO(&stock)
 	}
-	count, err := s.repo.GetRecordsCount()
+	count, err := s.repo.GetCountWithFilter(filterModel)
 	if err != nil{
 		return nil, domain.ErrInternalError
 	}

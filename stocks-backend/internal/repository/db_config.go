@@ -27,7 +27,7 @@ func InitDb(config DBConfig) (*gorm.DB,error){
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		config.Host, config.Port, config.User, config.Password, config.DbName, config.SSLMode)
 	//open db
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})	//silent mode, no logs 
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Info)})	//silent mode, no logs 
 	if err != nil{
 		return nil, err 
 	}

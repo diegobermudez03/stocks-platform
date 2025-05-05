@@ -2,8 +2,9 @@
     <div class=" flex flex-col">
         <FiltersComponent/>
         <RecommendationsComponent/>
+        <!--print stocks-->
         <div class=" flex flex-col flex-grow max-w-200 items-center">
-            <h1>in stockgrid</h1>
+            <!--print stocks-->
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                 <div class="flex flex-col min-h-[150px] w-[400px] bg-white border border-gray-200 shadow-2xs rounded-xl" v-for="stock in store.stocks" :key="stock.id">
                     <div class="p-4 md:p-5">
@@ -11,10 +12,11 @@
                     </div>
                 </div>
             </div>
-            <div class=" bg-white py-10 text-center">
+            <!--pagination-->
+            <div class=" bg-white pt-10 text-center">
                 <ul class=" flex items-center justify-center gap-2">
                     <li>
-                        <button @click="store.changePage(store.page-1)" class=" flex h-10 min-w-10 items-center justify-center rounded-lg border border-stroke bg-white px-2 text-base font-medium hover:bg-gray-100">
+                        <button @click="store.changePage(store.page-1)" class=" flex h-10 min-w-10 items-center justify-center rounded-lg border border-stroke border-gray-400 bg-white px-2 text-base font-medium hover:bg-gray-300">
                             <span>
                                 <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -25,15 +27,15 @@
                         </button>
                     </li>
                     <li v-for="num in store.pages" :key="num">
-                        <button @click="store.changePage(num)" v-if="num!==store.page" class="flex h-10 min-w-10 items-center justify-center rounded-lg border border-stroke bg-white px-2 text-base font-medium text-dark hover:bg-gray-100">
+                        <button @click="store.changePage(num)" v-if="num!==store.page" class="flex h-10 min-w-10 items-center justify-center rounded-lg border border-stroke border-gray-400 bg-white px-2 text-base font-medium text-dark hover:bg-gray-300">
                             {{ num }}
                         </button>
-                        <button @click="store.changePage(num)" v-else class="flex h-10 min-w-10 items-center justify-center rounded-lg border border-stroke px-2 text-base font-medium text-dark hover:bg-gray-1 bg-gray-400">
+                        <button @click="store.changePage(num)" v-else class="flex h-10 min-w-10 items-center justify-center rounded-lg border border-stroke px-2 text-base font-medium border-gray-400 text-dark hover:bg-gray-1 bg-gray-400">
                             {{ num }}
                         </button>
                     </li>
                     <li>
-                        <button @click="store.changePage(store.page+1)" class="flex h-10 min-w-10 items-center justify-center rounded-lg border border-stroke bg-white px-2 text-base font-medium text-dark hover:bg-gray-100">
+                        <button @click="store.changePage(store.page+1)" class="flex h-10 min-w-10 items-center justify-center rounded-lg border border-stroke border-gray-400 bg-white px-2 text-base font-medium text-dark hover:bg-gray-300">
                             <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path
                                 d="M18 10L11.5312 3.4375C11.25 3.15625 10.8125 3.15625 10.5312 3.4375C10.25 3.71875 10.25 4.15625 10.5312 4.4375L15.7812 9.78125H2.5C2.125 9.78125 1.8125 10.0937 1.8125 10.4688C1.8125 10.8438 2.125 11.1875 2.5 11.1875H15.8437L10.5312 16.5938C10.25 16.875 10.25 17.3125 10.5312 17.5938C10.6562 17.7188 10.8437 17.7812 11.0312 17.7812C11.2187 17.7812 11.4062 17.7188 11.5312 17.5625L18 11C18.2812 10.7187 18.2812 10.2812 18 10Z"

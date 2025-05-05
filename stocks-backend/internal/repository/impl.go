@@ -47,9 +47,23 @@ func (r *StocksPostgresRepo) GetActions()([]domain.ParamValueModel, error){
 
 func (r *StocksPostgresRepo) GetStocks(filter domain.GetStocksFilterModel)([]domain.StockModel, error){
 	var stocks []domain.StockModel
-	query := r.db.Model(&domain.StockModel{})
+	query:= r.getFilteredQuery(filter)
 	query.Offset(filter.Page * filter.Size).Limit(filter.Size)
 	query.Limit(filter.Size)
+	err := query.Find(&stocks).Error
+	return stocks, err
+}
+
+func (r *StocksPostgresRepo) GetCountWithFilter(filter domain.GetStocksFilterModel)(int64, error){
+	query := r.getFilteredQuery(filter)
+	var count int64
+	err := query.Count(&count).Error
+	return count, err
+}
+
+
+func ( r *StocksPostgresRepo) getFilteredQuery(filter domain.GetStocksFilterModel) *gorm.DB{
+	query := r.db.Model(&domain.StockModel{})
 	if filter.TextSearch != ""{
 		query = query.Where("ticker ILIKE ? OR company ILIKE ?", "%"+filter.TextSearch+"%", "%"+filter.TextSearch+"%")
 	}
@@ -77,8 +91,7 @@ func (r *StocksPostgresRepo) GetStocks(filter domain.GetStocksFilterModel)([]dom
 	if filter.Sort != ""{
 		query = query.Order(filter.Sort)
 	}
-	err := query.Find(&stocks).Error
-	return stocks, err
+	return query
 }
 
 

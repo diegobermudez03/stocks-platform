@@ -1,6 +1,6 @@
 <template>
-    <h1>rec</h1>
-    <div class=" overflow-x-auto w-full">
+    <h1>Our top recommendations</h1>
+    <div class=" overflow-x-auto w-full sticky top-0">
         <div class=" flex flex-row spacex-4 min-w-max">
             <div v-if="store.recommendations.length > 0" v-for="recommendation in store.recommendations" :key="recommendation.id"  
                 class=" bg-gray-900 text-white px-10">

@@ -10,6 +10,7 @@ import (
 
 	"github.com/diegobermudez03/stocks-platform/stocks-backend/internal/domain"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 	"github.com/google/uuid"
 )
 
@@ -42,6 +43,14 @@ func (s *RestAPIServer) Run() error{
 
 	log.Printf("Starting server at port: %s", s.config.Port)
 	r := chi.NewRouter()
+	r.Use(cors.Handler(cors.Options{
+        AllowedOrigins:   []string{"*"},
+        AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+        AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+        ExposedHeaders:   []string{"Link"},
+        AllowCredentials: true,
+        MaxAge:           300, 
+    }))
 	r.Mount("/api/v1", router)
 	return http.ListenAndServe(fmt.Sprintf(":%s", s.config.Port), r)
 }
