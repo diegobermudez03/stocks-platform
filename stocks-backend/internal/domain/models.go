@@ -42,6 +42,5 @@ type GetStocksFilterModel struct{
 type StockWithScore struct{
 	Score 			float64
 	AvrgSentiment	float64 
-	PercentageIncrease float64
 	Stock StockModel
 }

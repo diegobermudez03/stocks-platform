@@ -194,6 +194,7 @@ func (s *StocksServiceImpl)  GetStockFullData(stockId uuid.UUID) (*domain.StockD
 	Internal method to convert models to DTO
 */
 func (s *StocksServiceImpl) stockModelToDTO(model *domain.StockModel) *domain.StockDTO{
+	variationPercentage := (model.TargetTo-model.TargetFrom)/model.TargetFrom*100
 	return &domain.StockDTO{
 		ID: model.ID,
 		Ticker: model.Ticker,
@@ -203,6 +204,7 @@ func (s *StocksServiceImpl) stockModelToDTO(model *domain.StockModel) *domain.St
 		Action: model.Action,
 		Brokerage: model.Brokerage,
 		RatingFrom: model.RatingFrom,
+		Percentage: variationPercentage,
 		RatingTo: model.RatingTo,
 		Time: model.Time,
 	}

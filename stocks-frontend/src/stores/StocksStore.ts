@@ -56,7 +56,7 @@ export const stocksStore = defineStore('stocks', ()=>{
     } 
 
     async function changePage(pageNumber:number){
-        if(pageNumber < (totalRecords.value/size.value) && pageNumber>=1){
+        if(pageNumber <= Math.ceil(totalRecords.value/size.value) && pageNumber>=1){
             expandedStock.value=""
             page.value=pageNumber
         }

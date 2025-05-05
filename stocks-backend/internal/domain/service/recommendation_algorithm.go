@@ -75,7 +75,6 @@ func (s *StocksServiceImpl) GetRecommendations()([]domain.RecommendationDTO, err
 		recommendations[i]= domain.StockWithScore{
 			Score: score,
 			AvrgSentiment: sentimentScore,
-			PercentageIncrease: variationPercentage,
 			Stock: stock,
 		}
 	}
@@ -87,7 +86,6 @@ func (s *StocksServiceImpl) GetRecommendations()([]domain.RecommendationDTO, err
 		stock:= recommendations[i].Stock
 		recommendationsDTOs[i] = domain.RecommendationDTO{
 			RecommendationScore: recommendations[i].Score,
-			PercentageIncrease: recommendations[i].PercentageIncrease,
 			AvrgSentiment: recommendations[i].AvrgSentiment,
 			StockDTO: *s.stockModelToDTO(&stock),
 		}

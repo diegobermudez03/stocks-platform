@@ -1,0 +1,15 @@
+export interface RecommendationModel{
+    id: string,
+    ticker: string,
+    target_to: number,
+    target_from: number,
+    company: string,
+    action: string,
+    brokerage: string,
+    rating_from: string,
+    rating_to: string,
+    time: string,
+    recommendation_score: number,
+    avrg_sentiment: number,
+    percentage_increase: number,
+}

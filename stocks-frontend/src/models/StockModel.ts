@@ -1,5 +1,6 @@
 export interface StockModel{
     id: string,
+    percentage: number,
     ticker:         string,
     targetFrom:     number,
     targetTo:       number,

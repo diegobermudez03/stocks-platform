@@ -1,6 +1,7 @@
 import type { ParamModel } from "@/models/ParamModel";
+import type { RecommendationModel } from "@/models/RecommendationModel";
 import type { StockModel, StocksWithCount } from "@/models/StockModel"
-import {mockStocks} from '@/services/getStocksMock'
+import {mockStocks, recommendationsMock} from '@/services/mocks'
 
 export type Result<T> = {ok:true, data:T} | {ok:false, error:string} 
 
@@ -58,5 +59,14 @@ export async function getRatings(): Promise<Result<ParamModel[]>>{
             {count: 110, name: "BLANACE"},
             {count: 110, name: "Risk buy"}
         ]
+    }
+}
+
+
+export async function getRecommendations(): Promise<Result<RecommendationModel[]>>{
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return {
+        ok: true,
+        data: recommendationsMock
     }
 }

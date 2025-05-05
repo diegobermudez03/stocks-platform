@@ -1,19 +1,14 @@
 <template>
-    <div class=" flex flex-col md:flex-row">
+    <div class=" flex flex-col">
         <FiltersComponent/>
-        <div class=" flex flex-col flex-grow">
+        <RecommendationsComponent/>
+        <div class=" flex flex-col flex-grow max-w-200 items-center">
             <h1>in stockgrid</h1>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
-                <div class="flex flex-col min-h-[150px] bg-white border border-gray-200 shadow-2xs rounded-xl" :class="{ 'row-span-2' : store.expandedStock === stock.id}" v-for="stock in store.stocks" :key="stock.id">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                <div class="flex flex-col min-h-[150px] w-[400px] bg-white border border-gray-200 shadow-2xs rounded-xl" v-for="stock in store.stocks" :key="stock.id">
                     <div class="p-4 md:p-5">
                         <h3 class="text-lg font-bold text-gray-800">{{ stock.ratingFrom }}</h3>
                     </div>
-                    <button v-if="store.expandedStock===stock.id" @click="store.closeStock(stock.id)">
-                        Cerrar
-                    </button>
-                    <button v-else @click="store.expandStock(stock.id)">
-                        Expandir
-                    </button>
                 </div>
             </div>
             <div class=" bg-white py-10 text-center">
@@ -57,6 +52,7 @@
 <script lan="ts" setup>
 import FiltersComponent from './FiltersComponent.vue';
 import { stocksStore } from '@/stores/StocksStore';
+import RecommendationsComponent from './RecommendationsComponent.vue';
 const store = stocksStore()
 store.retrieveStocks()
 </script>

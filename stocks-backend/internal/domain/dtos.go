@@ -36,6 +36,7 @@ type StockDTO struct {
 	RatingFrom string	`json:"rating_from"`
 	RatingTo string		`json:"rating_to"`
 	Time time.Time		`json:"time"`
+	Percentage float64 	`json:"percentage"`
 }
 
 type StocksReturnDTO struct{
@@ -90,5 +91,4 @@ type RecommendationDTO struct{
 	StockDTO `json:"stock"`
 	RecommendationScore float64 `json:"recommendation_score"`
 	AvrgSentiment	float64 	`json:"avrg_sentiment"`
-	PercentageIncrease float64 `json:"percentage_increase"`
 }
