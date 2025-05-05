@@ -50,7 +50,7 @@ func(s *StocksServiceImpl) PopulateDatabase() error{
 /*
 	Main method, to retrieve the stocks based on the filters
 */
-func (s *StocksServiceImpl) GetStocks(filter domain.GetStocksFilter) ([]domain.StockDTO, error){
+func (s *StocksServiceImpl) GetStocks(filter domain.GetStocksFilter) (*domain.StocksReturnDTO, error){
 	if filter.Page > 0{
 		filter.Page -= 1
 	}
@@ -97,7 +97,15 @@ func (s *StocksServiceImpl) GetStocks(filter domain.GetStocksFilter) ([]domain.S
 	for i, stock := range stocks{
 		stocksDTO[i] = *s.stockModelToDTO(&stock)
 	}
-	return stocksDTO, nil
+	count, err := s.repo.GetRecordsCount()
+	if err != nil{
+		return nil, domain.ErrInternalError
+	}
+
+	return &domain.StocksReturnDTO{
+		Stocks: stocksDTO,
+		Count: count,
+	}, nil
 }
 
 

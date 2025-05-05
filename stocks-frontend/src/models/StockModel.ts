@@ -1,31 +1,18 @@
 export interface StockModel{
+    id: string,
     ticker:         string,
     targetFrom:     number,
     targetTo:       number,
     company:        string,
-    action:         StockAction,
+    action:         string,
     brokerage:      string,
-    ratingFrom :   StockRating,
-    ratingTo :     StockRating,
+    ratingFrom :   string,
+    ratingTo :     string,
     time:           Date
 }
 
-export enum StockAction{
-    Upgrade,
-    Downgrade,
-    Reiterated,
-    Initiated,
-    TargetRaised,
-    TargetLowered
+export interface StocksWithCount{
+    count: number,
+    stocks: StockModel[]
 }
 
-export enum StockRating{
-    Buy,
-    Sell,
-    Neutral,
-    Outperform,
-    Overweight,
-    MarketPerform,
-    EqualWeight,
-    Hold
-}

@@ -38,6 +38,10 @@ type StockDTO struct {
 	Time time.Time		`json:"time"`
 }
 
+type StocksReturnDTO struct{
+	Count 	int64			`json:"count"`
+	Stocks 	[]StockDTO		`json:"stocks"`
+}
 
 type RatingDTO struct {
 	Rating string `json:"rating"`

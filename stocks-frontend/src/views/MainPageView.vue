@@ -3,5 +3,5 @@
 </template>
 
 <script lan="ts" setup>
-    import StocksTableComponent from '@/components/StocksTableComponent.vue';
+    import StocksTableComponent from '@/components/StocksGridComponent.vue';
 </script>
