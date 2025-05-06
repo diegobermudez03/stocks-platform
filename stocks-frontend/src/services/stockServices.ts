@@ -1,9 +1,10 @@
-import { API_BASE_URL } from "@/config";
 import type { FullStockModel, NewsModel } from "@/models/FullStockModel";
 import type { ParamModel } from "@/models/ParamModel";
 import type { RecommendationModel } from "@/models/RecommendationModel";
 import type { StockModel, StocksWithCount } from "@/models/StockModel"
 import {recommendationsMock} from '@/services/mocks'
+
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export type Result<T> = {ok:true, data:T} | {ok:false, error:string} 
 

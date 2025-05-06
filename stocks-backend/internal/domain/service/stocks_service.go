@@ -17,6 +17,8 @@ type StocksServiceImpl struct {
 	apiToken string
 	externalAPIUrl string
 	externalAPIKey string
+	recommendationsCache []domain.RecommendationDTO
+	lastCacheSaved time.Time
 }
 
 func NewStocksService(repo repository.StocksRepo, apiUrl, apiToken, externalAPIUrl, externalAPIKey string) domain.StocksService{
@@ -188,6 +190,23 @@ func (s *StocksServiceImpl)  GetStockFullData(stockId uuid.UUID) (*domain.StockD
 	}
 	stockData.News = newsDTO
 	return stockData, nil
+}
+
+/*
+	Method to get the recommendations, it add sthe cache check layer
+*/
+func (s *StocksServiceImpl) GetRecommendations()([]domain.RecommendationDTO, error){
+	//if it has passed 10 minutes since last cache, we re fetch and re store
+	if s.lastCacheSaved.Before(time.Now().Add(time.Minute*-10)){
+		recommendations, err := s.getRecommendationsInternal()
+		if err != nil{
+			return nil, err
+		}
+		s.recommendationsCache = recommendations
+		s.lastCacheSaved = time.Now()
+		return recommendations, nil
+	}
+	return s.recommendationsCache, nil
 }
 
 

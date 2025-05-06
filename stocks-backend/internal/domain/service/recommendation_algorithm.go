@@ -53,7 +53,7 @@ var actionsScores = map[string]int{
 /*
 	Method to get the recommendations to investi today
 */
-func (s *StocksServiceImpl) GetRecommendations()([]domain.RecommendationDTO, error){
+func (s *StocksServiceImpl) getRecommendationsInternal()([]domain.RecommendationDTO, error){
 	topStocks, err := s.repo.GetBasicTopStocks()
 	if err != nil{
 		return nil, err 

@@ -169,16 +169,15 @@
         </div>
     </div>
     <!--SELECTED FILTERS-->
-    <div class=" overflow-x-auto w-full flex flex-row gap-5 items-center justify-center bg-gray-700">
+    <div class=" w-full flex flex-wrap justify-center gap-5 items-center bg-gray-700">
             <button class=" flex flex-row my-3 items-center bg-slate-900 text-white border-gray-500 border-2 shadow-md rounded-2xl px-5 py-3"
             v-for="filter in store.activeFilters" @click="()=>{filter.onRemove(); store.retrieveStocks()}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-
-            {{ filter.label }}
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                {{ filter.label }}
             </button>
-        </div>
+    </div>
 </template>
 
 
