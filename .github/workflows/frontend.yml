@@ -26,16 +26,16 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        working-directory: frontend
+        working-directory: stocks-frontend
         run: npm ci
 
       - name: Inject backend URL into .env
-        working-directory: frontend
+        working-directory: stocks-frontend
         run: echo "VITE_BACKEND_URL=${{ secrets.BACKEND_URL }}" > .env
 
 
       - name: Build Vue app
-        working-directory: frontend
+        working-directory: stocks-frontend
         run: npm run build
 
       - name: Configure AWS credentials
