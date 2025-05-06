@@ -47,4 +47,4 @@ jobs:
 
       - name: Sync to S3 bucket
         run: |
-          aws s3 sync ./frontend/dist s3://${{ env.S3_BUCKET_NAME }} --delete --acl public-read
+          aws s3 sync ./stocks-frontend/dist s3://${{ env.S3_BUCKET_NAME }} --delete --acl public-read
