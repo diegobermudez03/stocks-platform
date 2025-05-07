@@ -6,7 +6,10 @@ resource "aws_iam_role" "apprunner_role" {
     Statement = [{
       Effect = "Allow"
       Principal = {
-        Service = "build.apprunner.amazonaws.com"
+        Service = [
+          "build.apprunner.amazonaws.com",
+          "tasks.apprunner.amazonaws.com"
+        ]
       }
       Action = "sts:AssumeRole"
     }]
@@ -25,7 +28,7 @@ resource "aws_iam_role_policy" "apprunner_policy" {
         Action = [
           "ecr:GetAuthorizationToken",
           "ecr:BatchGetImage",
-          "ecr:GetDownloadUrlForLayer"
+          "ecr:GetDownloadUrlForLayer",
         ]
         Resource = "*"
       },

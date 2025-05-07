@@ -52,7 +52,7 @@ func (s *RestAPIServer) Run() error{
         MaxAge:           300, 
     }))
 	r.Mount("/api/v1", router)
-	return http.ListenAndServe(fmt.Sprintf(":%s", s.config.Port), r)
+	return http.ListenAndServe(fmt.Sprintf("0.0.0.0:%s", s.config.Port), r)
 }
 
 

@@ -35,43 +35,6 @@ resource "aws_apprunner_service" "backend" {
   instance_configuration {
     cpu    = "1024"
     memory = "2048"
-    instance_role_arn = aws_iam_role.app_runner_role.arn
+    instance_role_arn = var.iam_role_arn
   }
-}
-
-
-resource "aws_iam_role" "app_runner_role" {
-  name = "app-runner-secrets-access-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Action = "sts:AssumeRole",
-      Principal = {
-        Service = "build.apprunner.amazonaws.com"
-      },
-      Effect = "Allow"
-    }]
-  })
-}
-
-resource "aws_iam_policy" "secrets_policy" {
-  name = "AppRunnerSecretsPolicy"
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Action = [
-        "secretsmanager:GetSecretValue",
-        "secretsmanager:DescribeSecret"
-      ],
-      Effect = "Allow",
-      Resource = "*"
-    }]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "attach_secrets_policy" {
-  role       = aws_iam_role.app_runner_role.name
-  policy_arn = aws_iam_policy.secrets_policy.arn
 }
