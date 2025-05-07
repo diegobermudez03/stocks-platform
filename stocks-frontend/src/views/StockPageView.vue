@@ -9,25 +9,38 @@
     <div v-else-if="store.errorMessage">
         ERROR 
     </div>
-    <div v-else class=" flex flex-col p-10">
-        <div class=" flex flex-col md:flex-row gap-5">
-            <img class="w-full md:w-1/3 rounded-lg" :src="store.stockInfo?.companyProfile.logo"/>
+    <div v-else class=" flex flex-col p-10 justify-center">
+        <div class=" flex flex-col md:flex-row w-full max-w-[1400px] mx-auto px-4 items-start gap-4">
+            <img class="w-full md:w-2/6 h-auto  object-contain rounded-lg" :src="store.stockInfo?.companyProfile.logo"/>
             <div class=" flex flex-col">
                 <h1 class=" text-6xl font-bold">{{ store.stockInfo?.stock.ticker }}</h1>
                 <h1 class=" text-6xl font-bold">{{ store.stockInfo?.stock.company }}</h1>
-            </div>
-        </div>
-        <div class="mt-10">
-            <h2 class=" font-bold text-2xl">Latest news for ticker</h2>
-            <div class=" border-gray-400 border-2 rounded-lg" 
-                 style="max-height: calc(100vh - 2rem);">
-                <div v-for="news in store.stockInfo?.news || []"
-                class=" flex flex-col p-5 items-start">
-                    <hr class=" border-2 border-gray-400 w-full my-2">
-                    <img class=" w-36" :src="news.image"/>
-                    <div class=" flex flex-col">
-                        <h3 class="text-lg font-bold">{{ news.headline }}</h3>
-                        <p>{{ news.summary }}</p>
+                <!--TAB NAVIGATON MENU-->
+                <div class=" flex flex-row border-b-2 border-gray-400 w-full mt-5">
+                    <button v-for="tab in store.tabs" 
+                    :key="tab.name" 
+                    class=" hover:bg-gray-400 border-gray-700 rounded-sm px-3 py-1" 
+                    :class="{
+                        'border-black': store.tabSelected===tab.name, 
+                        'bg-slate-400': store.tabSelected===tab.name, 
+                        'border-b-4' : store.tabSelected===tab.name
+                    }"
+                    @click="store.changeTab(tab)"
+                    >{{ tab.label }}</button>
+                </div>
+                <!--CONTAINER OF TAB CHOOSEN-->
+                <div v-if="store.tabSelected==='news'">
+                    <div class=" border-gray-400 border-2 rounded-lg" 
+                        style="max-height: calc(100vh - 2rem);">
+                        <div v-for="news in store.stockInfo?.news || []"
+                        class=" flex flex-col p-5 items-start">
+                            <hr class=" border-2 border-gray-400 w-full my-2">
+                            <img class=" w-36" :src="news.image"/>
+                            <div class=" flex flex-col">
+                                <h3 class="text-lg font-bold">{{ news.headline }}</h3>
+                                <p>{{ news.summary }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

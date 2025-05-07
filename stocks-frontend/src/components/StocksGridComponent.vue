@@ -5,9 +5,13 @@
         <!--print stocks-->
         <div class=" flex flex-col flex-grow max-w-200 items-center">
             <!--print stocks-->
+            <div class=" flex flex-row mt-6 mb-1  justify-evenly w-full">
+                <p>{{ 'Found: '+ store.totalRecords + ' stocks'}}</p>
+                <button>PLACEHOLDER SORT BY</button>
+            </div>
             <div class="mt-3 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 <div 
-                class="flex flex-col min-h-[150px] w-[400px] bg-white border-gray-600 shadow-2xs rounded-xl border-2 hover:bg-gray-200 hover:shadow-xl" 
+                class="flex flex-col min-h-[150px] md:w-[400px] w-[250px] bg-white border-gray-600 shadow-2xs rounded-xl border-2 hover:bg-gray-200 hover:shadow-xl" 
                 v-for="stock in store.stocks" :key="stock.id"  @click="store.openStock(stock.id)">
                     <div class="p-4 md:p-5">
                         <div class=" flex flex-row justify-between">

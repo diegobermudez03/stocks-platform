@@ -178,6 +178,7 @@ export const stocksStore = defineStore('stocks', ()=>{
         pages, changePage, getParams, loadingFilter, actions, ratings, 
         filterError, expandedStock, expandStock, closeStock,
         searchQuery, fromPrice, toPrice, selectedRatingsFrom, selectedRatingsTo, selectedActions,
-        toggleFilter, openFilter, activeFilters, greenRatings, yellowRatings, orangeRatings, redRatings,openStock
+        toggleFilter, openFilter, activeFilters, greenRatings, yellowRatings, orangeRatings, redRatings,openStock,
+        totalRecords
     }
 })
