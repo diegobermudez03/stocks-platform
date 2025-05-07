@@ -31,7 +31,7 @@ jobs:
 
       - name: Build Vue app
         working-directory: stocks-frontend
-        run: VITE_BACKEND_URL=${{ secrets.BACKEND_URL }} npm run build
+        run: VITE_API_URL=${{ secrets.BACKEND_URL }} npm run build
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
