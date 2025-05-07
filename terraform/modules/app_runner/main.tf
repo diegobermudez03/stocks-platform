@@ -18,13 +18,15 @@ resource "aws_apprunner_service" "backend" {
           DB_PORT     = var.DB_PORT
           API_TOKEN = var.API_TOKEN
           API_URL = var.API_URL
-          PORT = var.PORT
           DB_USER = var.DB_USER
           DB_PASSWORD = var.DB_PASSWORD
           DB_DBNAME = var.DB_DBNAME
           DB_SSL_MODE = var.DB_SSL_MODE
           EXTERNAL_API_URL = var.EXTERNAL_API_URL
           EXTERNAL_API_KEY = var.EXTERNAL_API_KEY
+        }
+        runtime_environment_variables = {
+          PORT = var.PORT
         }
       }
     }
