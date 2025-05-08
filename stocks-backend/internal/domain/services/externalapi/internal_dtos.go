@@ -1,21 +1,4 @@
-package service
-
-type StockAPIRecordDTO struct {
-	Ticker     string `json:"ticker"`
-	TargetFrom string `json:"target_from"`
-	TargetTo   string `json:"target_to"`
-	Company    string `json:"company"`
-	Action     string `json:"action"`
-	Brokerage  string `json:"brokerage"`
-	RatingFrom string `json:"rating_from"`
-	RatingTo   string `json:"rating_to"`
-	Time       string `json:"time"`
-}
-
-type StocksAPIResponseDTO struct {
-	Items    []StockAPIRecordDTO `json:"items"`
-	NextPage string              `json:"next_page"`
-}
+package externalapi
 
 type InternalCompanyProfileDTO struct {
 	Country              string  `json:"country"`
@@ -43,14 +26,4 @@ type InternalNewsDTO struct {
 	Source   string `json:"source"`
 	Summary  string `json:"summary"`
 	URL      string `json:"url"`
-}
-
-type InternalSentimentDTO struct {
-	Data []struct {
-		Symbol string  `json:"symbol"`
-		Year   int     `json:"year"`
-		Month  int     `json:"Month"`
-		Change float64 `json:"change"`
-		Mspr   float64 `json:"mspr"`
-	} `json:"data"`
 }

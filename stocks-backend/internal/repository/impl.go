@@ -82,11 +82,14 @@ func ( r *StocksPostgresRepo) getFilteredQuery(filter domain.GetStocksFilterMode
 	if len(filter.ActionList) > 0{
 		query = query.Where("action IN ?", filter.ActionList)
 	}
-	if filter.TargetStart != nil{
-		query = query.Where("target_from >= ?", *filter.TargetStart)
-	}
-	if filter.TargetEnd != nil{
-		query = query.Where("target_to <= ?", *filter.TargetEnd)
+	if filter.TargetStart != nil && filter.TargetEnd != nil{
+		if *filter.TargetStart > *filter.TargetEnd{
+			query = query.Where("target_from >= ?", *filter.TargetStart)
+			query = query.Where("target_to <= ?", *filter.TargetEnd)
+		}else{
+			query = query.Where("target_from <= ?", *filter.TargetStart)
+			query = query.Where("target_to >= ?", *filter.TargetEnd)
+		}
 	}
 	if filter.Sort != ""{
 		query = query.Order(filter.Sort)

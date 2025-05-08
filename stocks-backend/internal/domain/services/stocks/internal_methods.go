@@ -1,4 +1,4 @@
-package service
+package stocks
 
 import (
 	"encoding/json"
@@ -94,44 +94,4 @@ func (s *StocksServiceImpl) saveBunchOfRecords(records []StockAPIRecordDTO) erro
 		}
 	}
 	return nil
-}
-
-/*
-	Internal method to retrieve the company profile of a given stock
-*/
-func (s *StocksServiceImpl) getCompanyProfile(stock *domain.StockModel)(*domain.StockDataDTO, error){
-	//get the company profile
-	response, err := http.Get(s.externalAPIUrl + "/stock/profile2?symbol=" + stock.Ticker + "&token=" + s.externalAPIKey)
-	if err != nil{
-		return nil, domain.ErrInternalError
-	}
-	defer response.Body.Close()
-	payload, err := io.ReadAll(response.Body)
-	if err != nil{
-		return nil, domain.ErrInternalError
-	}
-	companyProfile := InternalCompanyProfileDTO{}
-	if err := json.Unmarshal(payload, &companyProfile); err != nil{
-		return nil, domain.ErrInternalError
-	}
-
-	//construct the preview payload, since if the news fail, we will still return succesfully
-	stockData := domain.StockDataDTO{
-		Stock: *s.stockModelToDTO(stock),
-		CompanyProfile: domain.CompanyProfileDTO{
-			Country: companyProfile.Country,
-			Currency: companyProfile.Currency,
-			Exchange: companyProfile.Exchange,
-			Industry: companyProfile.FinnhubIndustry,
-			Ipo: companyProfile.IPO,
-			Logo: companyProfile.Logo,
-			MarketCapital: companyProfile.MarketCapitalization,
-			Name: companyProfile.Name,
-			Phone: companyProfile.Phone,
-			WebUrl: companyProfile.WebURL,
-			ShareOutstanding: companyProfile.ShareOutstanding,
-		},
-		News: []domain.NewsDTO{},
-	}
-	return &stockData, nil
 }

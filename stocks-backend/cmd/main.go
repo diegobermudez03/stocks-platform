@@ -4,7 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/diegobermudez03/stocks-platform/stocks-backend/internal/domain/service"
+	"github.com/diegobermudez03/stocks-platform/stocks-backend/internal/domain/services/externalapi"
+	"github.com/diegobermudez03/stocks-platform/stocks-backend/internal/domain/services/stocks"
 	"github.com/diegobermudez03/stocks-platform/stocks-backend/internal/repository"
 	"github.com/diegobermudez03/stocks-platform/stocks-backend/internal/transport"
 	"github.com/joho/godotenv"
@@ -54,12 +55,13 @@ func main() {
 		log.Fatalf("Unable to connect to db: %s", err.Error())
 	}
 	repo := repository.NewStocksPostgresRepo(db)
-	service := service.NewStocksService(repo, os.Getenv(API_URL), os.Getenv(API_TOKEN), os.Getenv(EXTERNAL_API_URL), os.Getenv(EXTERNAL_API_KEY))
-	if err := service.PopulateDatabase(); err != nil{
+	externalAPIService := externalapi.NewExternalAPIService(os.Getenv(EXTERNAL_API_URL), os.Getenv(EXTERNAL_API_KEY))
+	stocksService := stocks.NewStocksService(repo, os.Getenv(API_URL), os.Getenv(API_TOKEN), externalAPIService)
+	if err := stocksService.PopulateDatabase(); err != nil{
 		log.Fatalf("Unable to populate db with API data: %s", err.Error())
 	}
 	log.Print("Succesfully Populated the db")
-	server := transport.NewRestAPIServer(config, service)
+	server := transport.NewRestAPIServer(config, stocksService)
 	/*
 		Run server
 	*/

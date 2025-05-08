@@ -1,9 +1,6 @@
-package service
+package stocks
 
 import (
-	"encoding/json"
-	"io"
-	"net/http"
 	"time"
 
 	"github.com/diegobermudez03/stocks-platform/stocks-backend/internal/domain"
@@ -15,19 +12,17 @@ type StocksServiceImpl struct {
 	repo repository.StocksRepo
 	apiUrl string
 	apiToken string
-	externalAPIUrl string
-	externalAPIKey string
 	recommendationsCache []domain.RecommendationDTO
 	lastCacheSaved time.Time
+	externalAPI 	domain.ExternalApiService
 }
 
-func NewStocksService(repo repository.StocksRepo, apiUrl, apiToken, externalAPIUrl, externalAPIKey string) domain.StocksService{
+func NewStocksService(repo repository.StocksRepo, apiUrl, apiToken string, externalAPI domain.ExternalApiService) domain.StocksService{
 	return &StocksServiceImpl{
 		repo : repo,
 		apiUrl: apiUrl,
 		apiToken: apiToken,
-		externalAPIUrl: externalAPIUrl,
-		externalAPIKey: externalAPIKey,
+		externalAPI: externalAPI,
 	}
 }
 
@@ -94,7 +89,7 @@ func (s *StocksServiceImpl) GetStocks(filter domain.GetStocksFilter) (*domain.St
 	}
 	stocks, err := s.repo.GetStocks(filterModel)
 	if err != nil{
-		return nil, err
+		return nil, domain.ErrInternalError
 	}
 	stocksDTO := make([]domain.StockDTO, len(stocks))
 	for i, stock := range stocks{
@@ -159,38 +154,26 @@ func (s *StocksServiceImpl)  GetStockFullData(stockId uuid.UUID) (*domain.StockD
 		return nil, err 
 	}
 	//get the company profile
-	stockData, err := s.getCompanyProfile(stock)
+	companyProfile, err := s.externalAPI.GetCompanyProfile(stock.Ticker)
 	if err != nil{
 		return nil, err
 	}
+	//construct the preview payload, since if the news fail, we will still return succesfully
+	stockData := domain.StockDataDTO{
+		Stock: *s.stockModelToDTO(stock),
+		CompanyProfile: *companyProfile,
+		News: []domain.NewsDTO{},
+	}
 	//get company latest news
-	currentDate := time.Now().Format("2006-01-02")
-	response2, err := http.Get(s.externalAPIUrl + "/company-news?symbol=" + stock.Ticker + "&from=2025-01-01" + "&to=" +currentDate + "&token=" + s.externalAPIKey)
+	news, err := s.externalAPI.GetLatestNews(stock.Ticker)
+	//even if we had an error with the news, we will still return the stock info with an empty array
 	if err != nil{
-		return stockData, nil
+		return &stockData, nil
 	}
-	defer response2.Body.Close()
-	payload2, err := io.ReadAll(response2.Body)
-	if err != nil{
-		return stockData, nil
-	}
-	news := []InternalNewsDTO{}
-	if err := json.Unmarshal(payload2, &news); err != nil{
-		return stockData, nil
-	}
-	newsDTO := make([]domain.NewsDTO, len(news))
-	for i, news := range news{
-		newsDTO[i] = domain.NewsDTO{
-			Date: time.Unix(news.Datetime, 0),
-			Headline: news.Headline,
-			Image: news.Image,
-			Source: news.Source,
-			Summary: news.Summary,
-		}
-	}
-	stockData.News = newsDTO
-	return stockData, nil
+	stockData.News = news
+	return &stockData, nil
 }
+
 
 /*
 	Method to get the recommendations, it add sthe cache check layer

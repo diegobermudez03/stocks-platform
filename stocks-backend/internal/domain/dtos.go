@@ -91,3 +91,17 @@ type RecommendationDTO struct{
 	RecommendationScore float64 `json:"recommendation_score"`
 	AvrgSentiment	float64 	`json:"avrg_sentiment"`
 }
+
+/*
+	Only used for internal processment between services, declared at the domain
+	top level in order to not couple the implementations of the services (both dependent only on the domain)
+*/
+type InternalSentimentDTO struct {
+	Data []struct {
+		Symbol string  `json:"symbol"`
+		Year   int     `json:"year"`
+		Month  int     `json:"Month"`
+		Change float64 `json:"change"`
+		Mspr   float64 `json:"mspr"`
+	} `json:"data"`
+}

@@ -1,9 +1,6 @@
-package service
+package stocks
 
 import (
-	"encoding/json"
-	"io"
-	"net/http"
 	"sort"
 	"time"
 
@@ -98,21 +95,11 @@ func (s *StocksServiceImpl) getRecommendationsInternal()([]domain.Recommendation
 	Method to get the avarage sentiment of the given symbol
 */
 func (s *StocksServiceImpl) getAvarageSentiment(ticker string) float64{
-	currentDate := time.Now().Format("2006-01-02")
-	response, err := http.Get(s.externalAPIUrl + "/stock/insider-sentiment?symbol=" + ticker + "&from=2024-01-01" + "&to=" +currentDate + "&token=" + s.externalAPIKey)
+	sentiment, err := s.externalAPI.GetStockSentiment(ticker)
 	if err != nil{
 		return 0
 	}
-	defer response.Body.Close()
-	payload, err := io.ReadAll(response.Body)
-	if err != nil{
-		return 0
-	}
-	sentiment := InternalSentimentDTO{}
-	if err := json.Unmarshal(payload, &sentiment); err != nil{
-		return 0
-	}
-	//read sentiment data
+	//read sentiment data and calculate the avarage sentiment 
 	var avrgSentiment float64 
 	for _, sent := range sentiment.Data{
 		avrgSentiment += sent.Mspr

@@ -21,3 +21,9 @@ type StocksService interface {
 	GetStockFullData(stockId uuid.UUID) (*StockDataDTO, error)
 	GetRecommendations()([]RecommendationDTO, error)
 }
+
+type ExternalApiService interface{
+	GetCompanyProfile(symbol string)(*CompanyProfileDTO, error)
+	GetLatestNews(symbol string)([]NewsDTO, error)
+	GetStockSentiment(symbol string)(*InternalSentimentDTO, error)
+}
