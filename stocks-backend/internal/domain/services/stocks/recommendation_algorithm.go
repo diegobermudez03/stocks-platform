@@ -78,8 +78,12 @@ func (s *StocksServiceImpl) getRecommendationsInternal()([]domain.Recommendation
 	sort.Slice(recommendations, func(i, j int)bool{
 		return recommendations[i].Score > recommendations[j].Score
 	})
-	recommendationsDTOs := make([]domain.RecommendationDTO, 10)
-	for i := 0; i < 10; i++{
+	lenght := 10 
+	if lenght > len(recommendations){
+		lenght = len(recommendations)
+	}
+	recommendationsDTOs := make([]domain.RecommendationDTO, lenght)
+	for i := 0; i < lenght; i++{
 		stock:= recommendations[i].Stock
 		recommendationsDTOs[i] = domain.RecommendationDTO{
 			RecommendationScore: recommendations[i].Score,
