@@ -19,6 +19,7 @@ export const fullStockStore = defineStore('fullStock',()=>{
 
     async function loadStock(id:string){
         loading.value=true
+        errorMessage.value = null
         console.log("loading")
         const resp = await getFullStock(id);
         if(resp.ok){

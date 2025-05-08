@@ -84,11 +84,13 @@ func ( r *StocksPostgresRepo) getFilteredQuery(filter domain.GetStocksFilterMode
 	}
 	if filter.TargetStart != nil && filter.TargetEnd != nil{
 		if *filter.TargetStart > *filter.TargetEnd{
-			query = query.Where("target_from >= ?", *filter.TargetStart)
-			query = query.Where("target_to <= ?", *filter.TargetEnd)
-		}else{
+			query = query.Where("target_from > target_to")
 			query = query.Where("target_from <= ?", *filter.TargetStart)
 			query = query.Where("target_to >= ?", *filter.TargetEnd)
+		}else{
+			query = query.Where("target_from < target_to")
+			query = query.Where("target_from >= ?", *filter.TargetStart)
+			query = query.Where("target_to <= ?", *filter.TargetEnd)
 		}
 	}
 	if filter.Sort != ""{

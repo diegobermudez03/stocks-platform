@@ -11,10 +11,35 @@ export const stocksStore = defineStore('stocks', ()=>{
     const orangeRatings: string[]=["Cautious", "Sector Underperform", "Underperform", "Under Perform", "Underweight"]
     const redRatings: string[] =["Negative", "Sell", "Unchanged", "Reduce", "Neutral", "Overweight"]
 
+    //for sort
+    interface sortOption{
+        value:string,
+        label:string
+    }
+    const openSort = ref(false)
+    const defaultEmptySort: sortOption= {
+        value:'',
+        label: 'Sort by'
+    }
+    const sortOptions = [
+        {value:'CLOSEST_DATE', label:'Sort by Closest Date'},
+        {value:'DISTANT_DATE', label: 'Sort by Distant Date'},
+        defaultEmptySort
+    ]
+    const selectedSort = ref<sortOption>(defaultEmptySort)
+
     //for filters
-    const searchQuery = ref<string| null>(null)
-    const fromPrice = ref<number | null>(null)
-    const toPrice = ref<number | null>(null)
+    const searchQueryTmp = ref<string| null>(null)
+
+    const searchQuery = ref<string | null>(null)
+    const fromPriceTmp = ref<number | null>(null)
+    const toPriceTmp = ref<number | null>(null)
+    interface priceRange{
+        from: number,
+        to: number
+    }
+    const priceRange = ref<priceRange | null>(null)
+
     const selectedRatingsFrom = ref<string[]>([])
     const selectedRatingsTo = ref<string[]>([])
     const selectedActions = ref<string[]>([]) 
@@ -48,18 +73,19 @@ export const stocksStore = defineStore('stocks', ()=>{
     async function retrieveStocks(){
         loading.value = true
         openFilter.value= null
+        console.log(priceRange.value)
         const response = await getStocks({
             page : page.value,
             size : size.value,
             textSearch : searchQuery.value,
-            targetStart : fromPrice.value,
-            targetEnd : fromPrice.value,
+            targetStart : priceRange.value?.from??null,
+            targetEnd :priceRange.value?.to??null,
             ratingFrom: selectedRatingsFrom.value,
             ratingTo: selectedRatingsTo.value,
             action : selectedActions.value,
             timeStart : null,
             timeEnd : null,
-            sort : null
+            sort : selectedSort.value.value
 
         })
         loading.value = false
@@ -74,6 +100,22 @@ export const stocksStore = defineStore('stocks', ()=>{
             retrieveStocks()
         }
     } 
+
+    async function selectSortType(opt: sortOption){
+        selectedSort.value = opt
+        openSort.value = false
+        retrieveStocks()
+    }
+
+    async function switchSortMenu(){
+        if(openSort.value){
+            console.log("closing")
+            openSort.value = false
+        }else{
+            console.log("opening")
+            openSort.value = true
+        }
+    }
 
     async function changePage(pageNumber:number){
         if(pageNumber <= Math.ceil(totalRecords.value/size.value) && pageNumber>=1){
@@ -114,6 +156,21 @@ export const stocksStore = defineStore('stocks', ()=>{
         expandedStock.value = ""
     }
 
+    async function submitSearchFilter(){
+        searchQuery.value = searchQueryTmp.value
+        retrieveStocks()
+    }
+
+    async function submitPriceRange(){
+        if(fromPriceTmp.value && toPriceTmp.value){
+            priceRange.value = {
+                from: fromPriceTmp.value,
+                to: toPriceTmp.value
+            }
+
+            retrieveStocks()
+        }
+    }
 
     const activeFilters = computed(()=>{
         const filters: { label: string; onRemove: () => void }[] = [];
@@ -124,17 +181,14 @@ export const stocksStore = defineStore('stocks', ()=>{
             });
         }
 
-        if (fromPrice.value) {
+        if (priceRange.value) {
             filters.push({
-            label: `From price: ${fromPrice.value}`,
-                onRemove: () => (fromPrice.value = null)
-            });
-        }
-
-        if (toPrice.value) {
-            filters.push({
-            label: `To price: ${toPrice.value}`,
-            onRemove: () => (toPrice.value = null)
+            label: `From \$${priceRange.value.from.toFixed(2)} To: \$${priceRange.value.to.toFixed(2)}`,
+                onRemove: () =>{
+                    priceRange.value = null 
+                    fromPriceTmp.value = null
+                    toPriceTmp.value = null
+                }
             });
         }
 
@@ -177,8 +231,9 @@ export const stocksStore = defineStore('stocks', ()=>{
         stocks, size, page, loading, errorMessage, retrieveStocks, 
         pages, changePage, getParams, loadingFilter, actions, ratings, 
         filterError, expandedStock, expandStock, closeStock,
-        searchQuery, fromPrice, toPrice, selectedRatingsFrom, selectedRatingsTo, selectedActions,
+        searchQuery, fromPriceTmp, toPriceTmp, selectedRatingsFrom, selectedRatingsTo, selectedActions,
         toggleFilter, openFilter, activeFilters, greenRatings, yellowRatings, orangeRatings, redRatings,openStock,
-        totalRecords
+        totalRecords, openSort, sortOptions, selectedSort, selectSortType, switchSortMenu, submitSearchFilter,
+        searchQueryTmp, submitPriceRange
     }
 })

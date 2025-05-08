@@ -7,10 +7,10 @@
                     type="text"
                     class=" w-full  flex bg-transparent pl-2 text-black outline-0"
                     placeholder="Search for a stock or company"
-                    v-model="store.searchQuery"
-                    @keydown.enter="store.retrieveStocks"
+                    v-model="store.searchQueryTmp"
+                    @keydown.enter="store.submitSearchFilter"
                 >
-                <button type="submit" class=" relative p-2 bg-white rounded-full"  @click="store.retrieveStocks">
+                <button type="submit" class=" relative p-2 bg-white rounded-full"  @click="store.submitSearchFilter">
                     <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <g id="SVGRepo_bgCarrier" stroke-width="0"/>
                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
@@ -47,7 +47,7 @@
                             id="FromPrice"
                             value="0"
                             class="mt-0.5 w-full rounded-lg border-gray-600 border-[1px] shadow-md sm:text-sm px-2 py-1"
-                            v-model="store.fromPrice"
+                            v-model="store.fromPriceTmp"
                         />
                         </label>
                         <label for="ToPrice">
@@ -57,11 +57,11 @@
                             id="ToPrice"
                             value="10"
                             class="mt-0.5 w-full rounded-lg border-gray-600 border-[1px] shadow-md sm:text-sm px-2 py-1"
-                            v-model="store.toPrice"
+                            v-model="store.toPriceTmp"
                         />
                         </label>
                     </div>
-                    <button class=" px-5 py-2 bg-gray-700 text-white hover:bg-gray-900 rounded-lg m-3" @click="store.retrieveStocks">
+                    <button v-if="store.fromPriceTmp && store.toPriceTmp" class=" px-5 py-2 bg-gray-700 text-white hover:bg-gray-900 rounded-lg m-3" @click="store.submitPriceRange">
                         Apply
                     </button>
                 </div>

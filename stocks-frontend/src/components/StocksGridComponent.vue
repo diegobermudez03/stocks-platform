@@ -5,9 +5,22 @@
         <!--print stocks-->
         <div class=" flex flex-col flex-grow max-w-200 items-center">
             <!--print stocks-->
-            <div class=" flex flex-row mt-6 mb-1  justify-evenly w-full">
-                <p>{{ 'Found: '+ store.totalRecords + ' stocks'}}</p>
-                <button>PLACEHOLDER SORT BY</button>
+            <div class=" flex flex-row mt-6 mb-1  max-w-[1200px] justify-between w-full">
+                <div class=" flex flex-row">
+                    <p class=" font-bold">Found </p>
+                    <p>{{ ':   '+store.totalRecords + ' stocks'}}</p>
+                </div>
+                <div class=" group relative">
+                    <button  @click="store.switchSortMenu">{{ store.selectedSort.label }}</button>
+                    <div v-if="store.openSort"
+                     class="absolute right-5 top-full mt-2 z-50 w-64 divide-y divide-gray-300 rounded-lg border border-gray-300 bg-gray-50 shadow-md">
+                        <div class="flex flex-col justify-center items-start gap-3">
+                            <button  v-for="sort in store.sortOptions" :key="sort.value" class=" w-full rounded-lg border-gray-300 shadow-sm" 
+                            @click="store.selectSortType(sort)"
+                            >{{ sort.label }}</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="mt-3 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 <div 
@@ -65,7 +78,7 @@
             </div>
             <!--pagination-->
             <div class=" bg-white pt-10 text-center">
-                <ul class=" flex items-center justify-center gap-2">
+                <ul class=" flex items-center justify-center gap-0 md:gap-2">
                     <li>
                         <button @click="store.changePage(store.page-1)" class=" flex h-10 min-w-10 items-center justify-center rounded-lg border border-stroke border-gray-400 bg-white px-2 text-base font-medium hover:bg-gray-300">
                             <span>
@@ -78,7 +91,7 @@
                         </button>
                     </li>
                     <li v-for="num in store.pages" :key="num">
-                        <button @click="store.changePage(num)" v-if="num!==store.page" class="flex h-10 min-w-10 items-center justify-center rounded-lg border border-stroke border-gray-400 bg-white px-2 text-base font-medium text-dark hover:bg-gray-300">
+                        <button @click="store.changePage(num)" v-if="num!==store.page" class="flex h-10 w-7 md:min-w-10 items-center justify-center rounded-lg border border-stroke border-gray-400 bg-white px-2 text-base font-medium text-dark hover:bg-gray-300">
                             {{ num }}
                         </button>
                         <button @click="store.changePage(num)" v-else class="flex h-10 min-w-10 items-center justify-center rounded-lg border border-stroke px-2 text-base font-medium border-gray-400 text-dark hover:bg-gray-1 bg-gray-400">
