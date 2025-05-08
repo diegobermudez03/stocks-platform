@@ -1,3 +1,4 @@
+import type { ErrorModel } from "@/models/ErrorModel";
 import type { FullStockModel } from "@/models/FullStockModel";
 import router from "@/router";
 import { getFullStock } from "@/services/stockServices";
@@ -8,7 +9,7 @@ import { useRoute } from "vue-router";
 
 export const fullStockStore = defineStore('fullStock',()=>{
     const loading = ref(true)
-    const errorMessage = ref<string | null>(null)
+    const errorMessage = ref<ErrorModel | null>(null)
     const stockInfo = ref<FullStockModel | null>(null)
     const tabSelected = ref<string>("stock")
 
@@ -20,12 +21,14 @@ export const fullStockStore = defineStore('fullStock',()=>{
     async function loadStock(id:string){
         loading.value=true
         errorMessage.value = null
-        console.log("loading")
         const resp = await getFullStock(id);
         if(resp.ok){
             stockInfo.value = resp.data
         }else{
-            errorMessage.value=resp.error
+            errorMessage.value= {
+                message: resp.error,
+                code: resp.code
+            }
         }
         loading.value = false
     }

@@ -11,34 +11,22 @@
                     @keydown.enter="store.submitSearchFilter"
                 >
                 <button type="submit" class=" relative p-2 bg-white rounded-full"  @click="store.submitSearchFilter">
-                    <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g id="SVGRepo_bgCarrier" stroke-width="0"/>
-                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-                    <g id="SVGRepo_iconCarrier"> <path d="M14.9536 14.9458L21 21M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="#353535" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </g>
-                    </svg>
+                    <Search class="w-6 h-6 text-gray-800" />
                 </button>
             </div>
         </div>
         <!--FILTERS-->
-        <div class=" flex flex-row justify-center p-3 gap-10">
+        <div class=" flex flex-wrap justify-center p-3 gap-10">
             <!-- Target price filter -->
             <div class="group relative">
-                <button @click="store.toggleFilter('targetPrice')" class="flex items-center gap-2 border font-bold border-gray-300 pb-1 transition-colors  [&::-webkit-details-marker]:hidden rounded-lg px-3 py-1 text-white shadow-md">
-                    <span class="text-sm "> Target Price Range </span>
-                    <span class="transition-transform group-open:-rotate-180">
-                        <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="size-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </span>
+                <button @click="store.toggleFilter('targetPrice')" 
+                :class="store.openFilter === 'targetPrice' ? 'ring-2 ring-white' : ''"
+                class="flex items-center gap-2 border font-bold border-gray-300 pb-1 transition-colors  [&::-webkit-details-marker]:hidden rounded-lg px-3 py-1 text-white shadow-md">
+                    <SlidersHorizontal class="w-4 h-4 text-white" />
+                    <span class="text-sm">Target Price Range</span>
                 </button>
                 <div v-if="store.openFilter === 'targetPrice'" 
-                class="absolute left-0 top-full mt-2 z-50 w-64 divide-y divide-gray-300 rounded-lg border border-gray-300 bg-gray-50 shadow-md" >
+                    class="absolute left-0 top-full mt-2 z-50 w-64 rounded-xl border border-gray-200 bg-white shadow-xl" >
                     <div class="flex items-center gap-3 p-3">
                         <label for="FromPrice">
                         <span class="text-sm text-gray-700"> From </span>
@@ -69,23 +57,14 @@
 
              <!-- Rating from filter -->
             <div v-if="store.ratings.length > 0" class="group relative">
-                    <button @click="store.toggleFilter('from-rating')" class="flex items-center gap-2 border font-bold border-gray-300 pb-1 transition-colors  [&::-webkit-details-marker]:hidden rounded-lg px-3 py-1 text-white shadow-md">
-                        <span class="text-sm font-medium"> Rating From </span>
-                        <span class="transition-transform group-open:-rotate-180">
-                            <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="1.5"
-                            stroke="currentColor"
-                            class="size-4"
-                            >
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
-                        </span>
+                    <button @click="store.toggleFilter('from-rating')" 
+                    :class="store.openFilter === 'from-rating' ? 'ring-2 ring-white' : ''"
+                    class="flex items-center gap-2 border font-bold border-gray-300 pb-1 transition-colors  [&::-webkit-details-marker]:hidden rounded-lg px-3 py-1 text-white shadow-md">
+                        <Star class="w-4 h-4 text-white" />
+                        <span class="text-sm">Rating From</span>
                     </button>
                     <div v-if="store.openFilter==='from-rating'"
-                     class="absolute left-0 top-full mt-2 z-50 w-64 divide-y divide-gray-300 rounded-lg border border-gray-300 bg-gray-50 shadow-md">
+                        class="absolute left-0 top-full mt-2 z-50 w-64 rounded-xl border border-gray-200 bg-white shadow-xl">
                         <fieldset class="p-3">
                             <div class="flex flex-col justify-center items-start gap-3">
                                 <label v-for="rating in store.ratings" :key="rating.name" :for="rating.name" class="inline-flex items-center gap-3">
@@ -100,23 +79,14 @@
 
              <!-- Rating to filter -->
              <div v-if="store.ratings.length > 0" class="group relative">
-                <button @click="store.toggleFilter('to-rating')" class="flex items-center gap-2 border font-bold border-gray-300 pb-1 transition-colors  [&::-webkit-details-marker]:hidden rounded-lg px-3 py-1 text-white shadow-md">
-                    <span class="text-sm font-medium"> Rating To </span>
-                    <span class="transition-transform group-open:-rotate-180">
-                        <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="size-4"
-                        >
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </span>
+                <button @click="store.toggleFilter('to-rating')" 
+                :class="store.openFilter === 'to-rating' ? 'ring-2 ring-white' : ''"
+                class="flex items-center gap-2 border font-bold border-gray-300 pb-1 transition-colors  [&::-webkit-details-marker]:hidden rounded-lg px-3 py-1 text-white shadow-md">
+                    <Star class="w-4 h-4 text-white" />
+                    <span class="text-sm">Rating To</span>
                 </button>
                 <div v-if="store.openFilter==='to-rating'"
-                class="absolute left-0 top-full mt-2 z-50 w-64 divide-y divide-gray-300 rounded-lg border border-gray-300 bg-gray-50 shadow-md">
+                    class="absolute left-0 top-full mt-2 z-50 w-64 rounded-xl border border-gray-200 bg-white shadow-xl">
                     <fieldset class="p-3">
                         <div class="flex flex-col justify-center items-start gap-3">
                             <label v-for="rating in store.ratings" :key="rating.name" :for="rating.name" class="inline-flex items-center gap-3">
@@ -131,23 +101,14 @@
 
             <!-- Action filter -->
             <div v-if="store.actions.length> 0" class="group relative">
-                <button @click="store.toggleFilter('actions')" class="flex items-center gap-2 border font-bold border-gray-300 pb-1 transition-colors  [&::-webkit-details-marker]:hidden rounded-lg px-3 py-1 text-white shadow-md">
-                    <span class="text-sm font-medium"> Action </span>
-                    <span class="transition-transform group-open:-rotate-180">
-                        <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="size-4"
-                        >
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </span>
+                <button @click="store.toggleFilter('actions')" 
+                :class="store.openFilter === 'actions' ? 'ring-2 ring-white' : ''"
+                class="flex items-center gap-2 border font-bold border-gray-300 pb-1 transition-colors  [&::-webkit-details-marker]:hidden rounded-lg px-3 py-1 text-white shadow-md">
+                    <ArrowDownUp class="w-4 h-4 text-white" />
+                    <span class="text-sm">Action</span>
                 </button>
                 <div v-if="store.openFilter==='actions'"
-                class="absolute left-0 top-full mt-2 z-50 w-64 divide-y divide-gray-300 rounded-lg border border-gray-300 bg-gray-50 shadow-md">
+                    class="absolute left-0 top-full mt-2 z-50 w-64 rounded-xl border border-gray-200 bg-white shadow-xl">
                     <fieldset class="p-3">
                         <div class="flex flex-col justify-center items-start gap-3">
                             <label v-for="action in store.actions" :key="action.name" :for="action.name" class="inline-flex items-center gap-3" >
@@ -165,9 +126,7 @@
     <div class=" w-full flex flex-wrap justify-center gap-x-5 gap-y-0 items-center bg-gray-700">
             <button class=" flex flex-row my-3 items-center bg-slate-900 text-white border-gray-500 border-2 shadow-md rounded-2xl px-5 py-2"
             v-for="filter in store.activeFilters" @click="()=>{filter.onRemove(); store.retrieveStocks()}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <Trash2 class="w-5 h-5 mr-2 text-red-400 hover:text-red-600" />
                 {{ filter.label }}
             </button>
     </div>
@@ -176,6 +135,8 @@
 
 <script lan="ts" setup>
 import { stocksStore } from '@/stores/StocksStore';
+import { Search, SlidersHorizontal, Filter, ArrowDownUp, Star, Trash2 } from 'lucide-vue-next'
+
 const store = stocksStore()
 store.getParams()
 </script>

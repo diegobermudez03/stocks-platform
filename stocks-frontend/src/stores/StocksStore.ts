@@ -4,6 +4,7 @@ import { getActions, getRatings, getStocks, type Result } from '@/services/stock
 import type { StockModel } from '@/models/StockModel'
 import type { ParamModel } from '@/models/ParamModel'
 import router from '@/router'
+import type { ErrorModel } from '@/models/ErrorModel'
 
 export const stocksStore = defineStore('stocks', ()=>{
     const greenRatings : string[] = ["Positive", "Speculative Buy", "Overweigh", "Market Outperform", "Outperform", "Sector Outperform", "Buy", "Strong-Buy"]
@@ -53,7 +54,9 @@ export const stocksStore = defineStore('stocks', ()=>{
     const size = ref(21)
     const actions = ref<ParamModel[]>([])
     const ratings = ref<ParamModel[]>([])
-    const errorMessage = ref<string | null>(null)
+
+    //errors
+    const errorMessage = ref<ErrorModel | null>(null)
     const filterError = ref<string | null>(null)
     const loadingFilter = ref(true)
     const range = computed(()=>{
@@ -73,7 +76,6 @@ export const stocksStore = defineStore('stocks', ()=>{
     async function retrieveStocks(){
         loading.value = true
         openFilter.value= null
-        console.log(priceRange.value)
         const response = await getStocks({
             page : page.value,
             size : size.value,
@@ -93,7 +95,10 @@ export const stocksStore = defineStore('stocks', ()=>{
             stocks.value = response.data.stocks
             totalRecords.value = response.data.count
         }else{
-            errorMessage.value = response.error 
+            errorMessage.value = {
+                message: response.error,
+                code: response.code
+            }
         }
         if( page.value !== 1 && page.value > (totalRecords.value/size.value)){
             page.value=1
@@ -109,10 +114,8 @@ export const stocksStore = defineStore('stocks', ()=>{
 
     async function switchSortMenu(){
         if(openSort.value){
-            console.log("closing")
             openSort.value = false
         }else{
-            console.log("opening")
             openSort.value = true
         }
     }

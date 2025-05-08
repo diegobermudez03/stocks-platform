@@ -5,8 +5,9 @@ import type { StockModel, StocksWithCount } from "@/models/StockModel"
 import {recommendationsMock} from '@/services/mocks'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
+const UNKNOWN_ERROR = "Internal Unknown Error"
 
-export type Result<T> = {ok:true, data:T} | {ok:false, error:string} 
+export type Result<T> = {ok:true, data:T} | {ok:false, code:number, error:string} 
 
 interface GetStocksFilter {
     page: number | null,
@@ -40,7 +41,11 @@ export async function getStocks(filter: GetStocksFilter): Promise<Result<StocksW
         const res = await fetch(url)
         if (!res.ok) {
             const errorText = await res.text()
-            return { ok: false, error: errorText }
+            return { 
+                ok: false, 
+                error: errorText ,
+                code: res.status
+            }
         }
         const json = await res.json()
         const mappedStocks: StockModel[] = json.stocks.map((s: any) => ({
@@ -63,10 +68,11 @@ export async function getStocks(filter: GetStocksFilter): Promise<Result<StocksW
                 stocks: mappedStocks
             }
         }
-    } catch (err) {
+    } catch (err ) {
         return {
             ok: false,
-            error: (err as Error).message
+            code: 0,
+            error: UNKNOWN_ERROR
         }
     }
 }
@@ -76,7 +82,12 @@ export async function getActions(): Promise<Result<ParamModel[]>>{
         const url = `${API_BASE_URL}/actions`
         const response = await fetch(url)
         if (!response.ok) {
-            throw new Error(`Failed to fetch actions: ${response.statusText}`)
+            const errorText = await response.text()
+            return {
+                ok: false,
+                error: errorText,
+                code: response.status
+            }
         }
 
         const json: { action: string; count: number }[] = await response.json()
@@ -91,7 +102,8 @@ export async function getActions(): Promise<Result<ParamModel[]>>{
     } catch (error: any) {
         return {
             ok: false,
-            error: error.message
+            code: 0,
+            error: UNKNOWN_ERROR
         }
     }
 }
@@ -102,7 +114,12 @@ export async function getRatings(): Promise<Result<ParamModel[]>> {
         const url = `${API_BASE_URL}/ratings`
         const response = await fetch(url)
         if (!response.ok) {
-            throw new Error(`Failed to fetch ratings: ${response.statusText}`)
+            const errorText = await response.text()
+            return {
+                ok: false,
+                error: errorText,
+                code: response.status
+            }
         }
 
         const json: { rating: string; count: number }[] = await response.json()
@@ -117,7 +134,8 @@ export async function getRatings(): Promise<Result<ParamModel[]>> {
     } catch (error: any) {
         return {
             ok: false,
-            error: error.message
+            code: 0,
+            error: UNKNOWN_ERROR
         }
     }
 }
@@ -127,7 +145,12 @@ export async function getFullStock(id: string): Promise<Result<FullStockModel>>{
     try {
         const response = await fetch(`${API_BASE_URL}/stocks/${id}`);
         if (!response.ok) {
-            throw new Error(`Failed to fetch stock: ${response.statusText}`)
+            const errorText = await response.text()
+            return {
+                ok: false,
+                error: errorText,
+                code: response.status
+            }
         }
         const data =  await response.json()
         
@@ -169,16 +192,51 @@ export async function getFullStock(id: string): Promise<Result<FullStockModel>>{
     
         return { ok: true, data: result };
       } catch (error:any) {
-        return { ok: false, error: error.message };
+        return { 
+            ok: false, 
+            error: UNKNOWN_ERROR,
+            code: 0
+        };
       }
 }
 
 
-export async function getRecommendations(): Promise<Result<RecommendationModel[]>>{
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return {
-        ok: true,
-        data: recommendationsMock
+export async function getRecommendations(): Promise<Result<RecommendationModel[]>> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/recommendations`)
+      if (!res.ok) {
+        const errorText = await res.text()
+        return { 
+            ok: false,
+            code: res.status, 
+            error: errorText 
+        }
+      }
+  
+      const rawData = await res.json()
+  
+      const recommendations: RecommendationModel[] = rawData.map((item: any) => ({
+        id: item.stock.id,
+        ticker: item.stock.ticker,
+        target_from: item.stock.target_from,
+        target_to: item.stock.target_to,
+        company: item.stock.company,
+        action: item.stock.action,
+        brokerage: item.stock.brokerage,
+        rating_from: item.stock.rating_from,
+        rating_to: item.stock.rating_to,
+        time: item.stock.time,
+        percentage_increase: item.stock.percentage,
+        recommendation_score: item.recommendation_score,
+        avrg_sentiment: item.avrg_sentiment
+      }))
+  
+      return { ok: true, data: recommendations }
+    } catch (error) {
+      return { 
+        ok: false, 
+        code: 0,
+        error: UNKNOWN_ERROR
+      }
     }
-}
-
+  }
