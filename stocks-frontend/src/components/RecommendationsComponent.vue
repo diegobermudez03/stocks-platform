@@ -23,13 +23,13 @@
                 <div class=" flex flex-row justify-between">
                   <h2 class=" text-2xl font-bold">{{ recommendation.ticker }}</h2>
                   <div class=" flex flex-col ">
-                    <div class="flex items-center gap-1" :class="{'text-green-500': recommendation.percentage_increase > 0, 'text-red-500': recommendation.percentage_increase <= 0}">
+                    <div class="flex items-center gap-1" :class="{'text-green-500': recommendation.percentageIncrease > 0, 'text-red-500': recommendation.percentageIncrease <= 0}">
                       <TrendingUp class="w-4 h-4" />
-                      <span class="font-semibold">{{ (recommendation.percentage_increase > 0 ? '+' : '') + recommendation.percentage_increase.toFixed(2) + '%' }}</span>
+                      <span class="font-semibold">{{ (recommendation.percentageIncrease > 0 ? '+' : '') + recommendation.percentageIncrease.toFixed(2) + '%' }}</span>
                     </div>
                     <div class="flex items-center gap-1">
                       <DollarSign class="w-4 h-4 text-gray-300" />
-                      <span>{{ recommendation.target_to.toFixed(2) }}</span>
+                      <span>{{ recommendation.targetTo.toFixed(2) }}</span>
                     </div>
 
                   </div>
@@ -41,11 +41,11 @@
                       <span>Score</span>
                     </div>
                     <h3 class="text-lg font-medium" :class="{
-                      'text-green-500' : recommendation.recommendation_score >= 0.5, 
-                      'text-yellow-500': recommendation.recommendation_score >= 0.3 && recommendation.recommendation_score < 0.5,
-                      'text-orange-500' : recommendation.recommendation_score >= 0.1 && recommendation.recommendation_score < 0.3,
-                      'text-red-600' : recommendation.recommendation_score < 0.1
-                    }">{{recommendation.recommendation_score.toFixed(2) }}</h3>
+                      'text-green-500' : recommendation.recommendationScore >= 0.5, 
+                      'text-yellow-500': recommendation.recommendationScore >= 0.3 && recommendation.recommendationScore < 0.5,
+                      'text-orange-500' : recommendation.recommendationScore >= 0.1 && recommendation.recommendationScore < 0.3,
+                      'text-red-600' : recommendation.recommendationScore < 0.1
+                    }">{{recommendation.recommendationScore.toFixed(2) }}</h3>
                   </div>
                   <div class=" flex flex-col">
                     <div class="flex items-center gap-1 text-gray-400">
@@ -53,11 +53,11 @@
                       <span>Insider Sentiment</span>
                     </div>
                     <h3 class="text-lg font-medium" :class="{
-                      'text-green-500' : recommendation.recommendation_score >= 85, 
-                      'text-yellow-500': recommendation.recommendation_score >= 65 && recommendation.recommendation_score < 85,
-                      'text-orange-500' : recommendation.recommendation_score >= 40 && recommendation.recommendation_score < 65,
-                      'text-red-600' : recommendation.recommendation_score < 40
-                    }">{{recommendation.avrg_sentiment.toFixed(2) }}</h3>
+                      'text-green-500' : recommendation.avrgSentiment >= 60, 
+                      'text-yellow-500': recommendation.avrgSentiment >= 30 && recommendation.avrgSentiment < 60,
+                      'text-orange-500' : recommendation.avrgSentiment >= 10 && recommendation.avrgSentiment < 30,
+                      'text-red-600' : recommendation.avrgSentiment < 10
+                    }">{{recommendation.avrgSentiment.toFixed(2) }}</h3>
                   </div>
                 </div>
             </button>
@@ -70,6 +70,7 @@
 import { recommendationsStore } from '@/stores/RecommendationsStore';
 import { TrendingUp, DollarSign, Gauge, Users } from 'lucide-vue-next'
 import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { watch, nextTick } from 'vue';
 const store = recommendationsStore()
 store.retrieveRecommendations()
 
@@ -81,6 +82,7 @@ function pauseScroll(){
 }
 
 function startScroll(){
+  console.log('starting scroll', scrollContainer.value)
   if (!scrollContainer.value) return
   scrollInterval = setInterval(() => {
     const el = scrollContainer.value
@@ -91,7 +93,18 @@ function startScroll(){
   }, 20) 
 }
 
-onMounted(startScroll)
+//watch and only start animation until our component has items (which means, is rendered)
+watch(
+  () => store.recommendations.length,
+  async (newVal) => {
+    if (newVal) {
+      await nextTick() 
+      startScroll()
+    }
+  },
+  { immediate: true } 
+)
+
 onBeforeUnmount(pauseScroll)
 
 </script>

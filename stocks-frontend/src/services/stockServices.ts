@@ -155,39 +155,41 @@ export async function getFullStock(id: string): Promise<Result<FullStockModel>>{
         const data =  await response.json()
         
         const result: FullStockModel = {
-          stock: {
-            id: data.stock.id,
-            percentage: data.stock.percentage,
-            ticker: data.stock.ticker,
-            targetFrom: data.stock.target_from,
-            targetTo: data.stock.target_to,
-            company: data.stock.company,
-            action: data.stock.action,
-            brokerage: data.stock.brokerage,
-            ratingFrom: data.stock.rating_from,
-            ratingTo: data.stock.rating_to,
-            time: new Date(data.stock.time),
-          },
-          companyProfile: {
-            country: data.company_profile.country,
-            currency: data.company_profile.currency,
-            exchange: data.company_profile.exchange,
-            industry: data.company_profile.industry,
-            ipo: new Date(data.company_profile.ipo),
-            logo: data.company_profile.logo,
-            marketCapital: data.company_profile.market_capital,
-            name: data.company_profile.name,
-            phone: data.company_profile.phone,
-            webUrl: data.company_profile.web_url,
-            shareOurstanding: data.company_profile.share_outstanding,
-          },
-          news: (data.news || []).map((n: any) => ({
-            date: new Date(n.date),
-            headline: n.headline,
-            image: n.image,
-            source: n.source,
-            summary: n.summary,
-          })),
+            recommendationScore: data.recommendation_score,
+            avrgSentiment: data.avrg_sentiment,
+            stock: {
+                id: data.stock.id,
+                percentage: data.stock.percentage,
+                ticker: data.stock.ticker,
+                targetFrom: data.stock.target_from,
+                targetTo: data.stock.target_to,
+                company: data.stock.company,
+                action: data.stock.action,
+                brokerage: data.stock.brokerage,
+                ratingFrom: data.stock.rating_from,
+                ratingTo: data.stock.rating_to,
+                time: new Date(data.stock.time),
+            },
+            companyProfile: {
+              country: data.company_profile.country,
+              currency: data.company_profile.currency,
+              exchange: data.company_profile.exchange,
+              industry: data.company_profile.industry,
+              ipo: new Date(data.company_profile.ipo),
+              logo: data.company_profile.logo,
+              marketCapital: data.company_profile.market_capital,
+              name: data.company_profile.name,
+              phone: data.company_profile.phone,
+              webUrl: data.company_profile.web_url,
+              shareOurstanding: data.company_profile.share_outstanding,
+            },
+            news: (data.news || []).map((n: any) => ({
+              date: new Date(n.date),
+              headline: n.headline,
+              image: n.image,
+              source: n.source,
+              summary: n.summary,
+            })),
         };
     
         return { ok: true, data: result };
@@ -218,17 +220,17 @@ export async function getRecommendations(): Promise<Result<RecommendationModel[]
       const recommendations: RecommendationModel[] = rawData.map((item: any) => ({
         id: item.stock.id,
         ticker: item.stock.ticker,
-        target_from: item.stock.target_from,
-        target_to: item.stock.target_to,
+        targetFrom: item.stock.target_from,
+        targetTo: item.stock.target_to,
         company: item.stock.company,
         action: item.stock.action,
         brokerage: item.stock.brokerage,
-        rating_from: item.stock.rating_from,
-        rating_to: item.stock.rating_to,
+        ratingFrom: item.stock.rating_from,
+        ratingTo: item.stock.rating_to,
         time: item.stock.time,
-        percentage_increase: item.stock.percentage,
-        recommendation_score: item.recommendation_score,
-        avrg_sentiment: item.avrg_sentiment
+        percentageIncrease: item.stock.percentage,
+        recommendationScore: item.recommendation_score,
+        avrgSentiment: item.avrg_sentiment
       }))
   
       return { ok: true, data: recommendations }

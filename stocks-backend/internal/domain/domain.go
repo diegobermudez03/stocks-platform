@@ -11,6 +11,8 @@ var (
 	ErrInvalidPayloadInHttpCall = errors.New("invalid payload in http call")
 	ErrInternalErrorWritingToDb = errors.New("internal error writing to db")
 	ErrInternalError = errors.New("an error ocurred, try again later")
+	ErrUnableToLiveConnection = errors.New("unable to create live price connection")
+	ErrInvalidStockId = errors.New("invalid stock id")
 )
 
 type StocksService interface {
@@ -20,10 +22,14 @@ type StocksService interface {
 	GetRatings() ([]RatingDTO, error)
 	GetStockFullData(stockId uuid.UUID) (*StockDataDTO, error)
 	GetRecommendations()([]RecommendationDTO, error)
+	SuscribeStockPrice(stockId uuid.UUID)(chan PriceUpdate, error)
+	UnsuscribeFromStock(stockId uuid.UUID, channel chan PriceUpdate)
 }
 
 type ExternalApiService interface{
 	GetCompanyProfile(symbol string)(*CompanyProfileDTO, error)
 	GetLatestNews(symbol string)([]NewsDTO, error)
 	GetStockSentiment(symbol string)(*InternalSentimentDTO, error)
+	LiveSymbolPrice(symbol string)(chan PriceUpdate, error)
+	UnsuscribePriceClient(symbol string, channel chan PriceUpdate)
 }

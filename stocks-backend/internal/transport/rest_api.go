@@ -40,6 +40,7 @@ func (s *RestAPIServer) Run() error{
 	router.Get("/stocks", s.getStocks)
 	router.Get("/stocks/{id}", s.getStockData)
 	router.Get("/recommendations", s.GetRecommendations)
+	router.Get("/stocks/{id}/live", s.LivePriceUpdates)
 
 	log.Printf("Starting server at port: %s", s.config.Port)
 	r := chi.NewRouter()
@@ -144,4 +145,55 @@ func (s *RestAPIServer) GetRecommendations(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	WriteJSON(w, http.StatusOK, recommendations)
+}
+
+
+/*
+ 	Server sent events for price live updates
+*/
+func (s *RestAPIServer) LivePriceUpdates(w http.ResponseWriter, r *http.Request){
+	stockId := chi.URLParam(r, "id")
+	if stockId == ""{
+		WriteError(w, http.StatusBadRequest, errors.New("invalid stock id"))
+		return
+	}
+	uuidId, err := uuid.Parse(stockId)
+	if err != nil{
+		WriteError(w, http.StatusBadRequest, errors.New("invalid stock id"))
+		return
+	}
+	channel, err := s.service.SuscribeStockPrice(uuidId)
+
+	// SETTING SSE
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		http.Error(w, "Streaming unsupported", http.StatusInternalServerError)
+		return
+	}
+	w.Write([]byte("data: CONNECTED\n\n"))
+	flusher.Flush()
+
+	//channel to detect connection closing
+	clientGone := r.Context().Done()
+	select{
+	case <- clientGone:
+		s.service.UnsuscribeFromStock(uuidId, channel)
+		return 
+	case update, ok :=<-channel:{
+		//if for any reason the channel was closed, then we close the SSE connection
+		if !ok{
+			w.Write([]byte("event:close\ndata: Connection closing\n\n"))
+			flusher.Flush()
+			return 
+		}
+		//if it was an update, we send the update message
+		message := fmt.Sprintf("data: %v\n\n", update.Price)
+		w.Write([]byte(message))
+		flusher.Flush()
+	}
+	}
 }

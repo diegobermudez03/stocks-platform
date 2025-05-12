@@ -158,11 +158,16 @@ func (s *StocksServiceImpl)  GetStockFullData(stockId uuid.UUID) (*domain.StockD
 	if err != nil{
 		return nil, err
 	}
+	//get the avarage sentiment and the recommendation score
+	sentiment := s.getAvarageSentiment(stock.Ticker)
+	score := s.getRecommendationScore(*stock, sentiment)
 	//construct the preview payload, since if the news fail, we will still return succesfully
 	stockData := domain.StockDataDTO{
 		Stock: *s.stockModelToDTO(stock),
 		CompanyProfile: *companyProfile,
 		News: []domain.NewsDTO{},
+		AvrgSentiment: sentiment,
+		RecommendationScore: score,
 	}
 	//get company latest news
 	news, err := s.externalAPI.GetLatestNews(stock.Ticker)
@@ -192,6 +197,32 @@ func (s *StocksServiceImpl) GetRecommendations()([]domain.RecommendationDTO, err
 	return s.recommendationsCache, nil
 }
 
+
+/*
+	Method to suscribe to live updatyes of a stock
+*/
+func (s *StocksServiceImpl) SuscribeStockPrice(stockId uuid.UUID)(chan domain.PriceUpdate, error){
+	stock, err := s.repo.GetStockById(stockId)
+	if err != nil{
+		return nil, domain.ErrInvalidStockId
+	}
+	channel, err := s.externalAPI.LiveSymbolPrice(stock.Ticker)
+	if err != nil{
+		return nil, domain.ErrUnableToLiveConnection
+	}
+	return channel, nil
+}
+
+/*
+	Method to unsuscribe from a live price connection
+*/
+func (s *StocksServiceImpl) UnsuscribeFromStock(stockId uuid.UUID, channel chan domain.PriceUpdate){
+	stock, err := s.repo.GetStockById(stockId)
+	if err != nil{
+		return 
+	}
+	s.externalAPI.UnsuscribePriceClient(stock.Ticker, channel)
+}
 
 /*
 	Internal method to convert models to DTO

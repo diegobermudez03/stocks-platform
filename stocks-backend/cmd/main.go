@@ -23,6 +23,7 @@ const(
 	DB_SSL_MODE = "DB_SSL_MODE"
 	EXTERNAL_API_URL = "EXTERNAL_API_URL"
 	EXTERNAL_API_KEY = "EXTERNAL_API_KEY"
+	WEBSOCKET_API_URL = "WEBSOCKET_API_URL"
 )
 
 
@@ -55,7 +56,7 @@ func main() {
 		log.Fatalf("Unable to connect to db: %s", err.Error())
 	}
 	repo := repository.NewStocksPostgresRepo(db)
-	externalAPIService := externalapi.NewExternalAPIService(os.Getenv(EXTERNAL_API_URL), os.Getenv(EXTERNAL_API_KEY))
+	externalAPIService := externalapi.NewExternalAPIService(os.Getenv(EXTERNAL_API_URL), os.Getenv(EXTERNAL_API_KEY), os.Getenv(WEBSOCKET_API_URL))
 	stocksService := stocks.NewStocksService(repo, os.Getenv(API_URL), os.Getenv(API_TOKEN), externalAPIService)
 	if err := stocksService.PopulateDatabase(); err != nil{
 		log.Fatalf("Unable to populate db with API data: %s", err.Error())

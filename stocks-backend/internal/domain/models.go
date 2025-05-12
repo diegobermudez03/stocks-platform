@@ -44,3 +44,9 @@ type StockWithScore struct{
 	AvrgSentiment	float64 
 	Stock StockModel
 }
+
+
+type StockPriceUpdate struct{
+	Symbol 		string 
+
+}

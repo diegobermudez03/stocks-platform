@@ -57,18 +57,8 @@ func (s *StocksServiceImpl) getRecommendationsInternal()([]domain.Recommendation
 	}
 	recommendations := make([]domain.StockWithScore, len(topStocks))
 	for i, stock := range topStocks{
-		//calculate the recommendation score
 		sentimentScore := s.getAvarageSentiment(stock.Ticker)
-		variationPercentage := (stock.TargetTo-stock.TargetFrom)/stock.TargetFrom*100
-		ratingVariationScore := ratingScoreMap[stock.RatingTo] - ratingScoreMap[stock.RatingFrom]
-		score := 0.35 * (sentimentScore/100)
-		score += 0.25 * (variationPercentage/100)
-		score += 0.20 * (float64(ratingVariationScore)/100)
-		score += 0.15 * (float64(actionsScores[stock.Action])/8)
-		daysSinceNow := time.Since(stock.Time).Hours()/24
-		//this is to punish recommendations based on when they were made, because if they were made a month ago, is not as good as one made 1 day ago
-		recencyWeight := 1 / (1+(daysSinceNow / 100))
-		score *= recencyWeight
+		score := s.getRecommendationScore(stock, sentimentScore)
 		recommendations[i]= domain.StockWithScore{
 			Score: score,
 			AvrgSentiment: sentimentScore,
@@ -94,6 +84,23 @@ func (s *StocksServiceImpl) getRecommendationsInternal()([]domain.Recommendation
 	return recommendationsDTOs, nil
 }
 
+/*
+	Method to calculate the recommendation score for a given stock
+*/
+func (s *StocksServiceImpl) getRecommendationScore(stock domain.StockModel, sentimentScore float64) float64{
+	//calculate the recommendation score
+	variationPercentage := (stock.TargetTo-stock.TargetFrom)/stock.TargetFrom*100
+	ratingVariationScore := ratingScoreMap[stock.RatingTo] - ratingScoreMap[stock.RatingFrom]
+	score := 0.35 * (sentimentScore/100)
+	score += 0.25 * (variationPercentage/100)
+	score += 0.20 * (float64(ratingVariationScore)/100)
+	score += 0.15 * (float64(actionsScores[stock.Action])/8)
+	daysSinceNow := time.Since(stock.Time).Hours()/24
+	//this is to punish recommendations based on when they were made, because if they were made a month ago, is not as good as one made 1 day ago
+	recencyWeight := 1 / (1+(daysSinceNow / 100))
+	score *= recencyWeight
+	return score
+}
 
 /*
 	Method to get the avarage sentiment of the given symbol

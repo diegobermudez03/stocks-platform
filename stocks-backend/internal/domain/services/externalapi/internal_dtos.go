@@ -27,3 +27,18 @@ type InternalNewsDTO struct {
 	Summary  string `json:"summary"`
 	URL      string `json:"url"`
 }
+
+type InternalSuscribeDTO struct {
+	Type   string `json:"type"`
+	Symbol string `json:"symbol"`
+}
+
+type InternalStockPriceUpdate struct {
+	Data []struct {
+		P float64 `json:"p"`
+		S string  `json:"s"`
+		T int64   `json:"t"`
+		V float64 `json:"v"`
+	} `json:"data"`
+	Type string `json:"type"`
+}

@@ -59,6 +59,8 @@ type StockDataDTO struct{
 	Stock StockDTO `json:"stock"`
 	CompanyProfile CompanyProfileDTO `json:"company_profile"`
 	News []NewsDTO `json:"news"`
+	RecommendationScore float64 `json:"recommendation_score"`
+	AvrgSentiment	float64 	`json:"avrg_sentiment"`
 }
 
 
@@ -92,6 +94,10 @@ type RecommendationDTO struct{
 	AvrgSentiment	float64 	`json:"avrg_sentiment"`
 }
 
+type PriceUpdate struct{
+	Price 	float64	`json:"price"`
+}
+
 /*
 	Only used for internal processment between services, declared at the domain
 	top level in order to not couple the implementations of the services (both dependent only on the domain)
@@ -105,3 +111,5 @@ type InternalSentimentDTO struct {
 		Mspr   float64 `json:"mspr"`
 	} `json:"data"`
 }
+
+

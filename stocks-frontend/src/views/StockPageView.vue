@@ -43,7 +43,27 @@
                 <!--CONTAINER OF TAB CHOOSEN-->
                 <div v-if="store.tabSelected==='stock'" class="mt-5 space-y-3">
                     <h2 class="text-2xl font-bold mb-4">Stock Details</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-48 gap-y-4">
+                    <div class=" flex flex-row justify-between">
+                        <div  class=" flex flex-col items-center">
+                            <p class=" font-semibold">Recommendation Score</p>
+                                    <p class="text-lg font-medium" :class="{
+                            'text-green-500' : store.stockInfo!.recommendationScore >= 0.5, 
+                            'text-yellow-500': store.stockInfo!.recommendationScore >= 0.3 && store.stockInfo!.recommendationScore < 0.5,
+                            'text-orange-500' : store.stockInfo!.recommendationScore >= 0.1 && store.stockInfo!.recommendationScore < 0.3,
+                            'text-red-600' : store.stockInfo!.recommendationScore < 0.1
+                            }">{{ store.stockInfo!.recommendationScore.toFixed(2) }}</p>
+                        </div>
+                        <div  class=" flex flex-col items-center">
+                            <p  class=" font-semibold">Avarage Insider Sentiment</p>
+                            <p class="text-lg font-medium" :class="{
+                            'text-green-500' : store.stockInfo!.avrgSentiment >= 60, 
+                            'text-yellow-500': store.stockInfo!.avrgSentiment >= 30 && store.stockInfo!.avrgSentiment < 60,
+                            'text-orange-500' : store.stockInfo!.avrgSentiment >= 10 && store.stockInfo!.avrgSentiment < 30,
+                            'text-red-600' : store.stockInfo!.avrgSentiment < 10
+                            }">{{ store.stockInfo!.avrgSentiment.toFixed(2) }}</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-28 md:gap-x-48 gap-y-4">
                         <p class="flex items-center gap-2">
                             <TrendingUp class="w-4 h-4 text-gray-600" />
                             <span class="font-semibold">Ticker:</span> {{ store.stockInfo!.stock.ticker }}
@@ -89,7 +109,7 @@
                 </div>
                 <div v-if="store.tabSelected === 'company' && store.stockInfo?.companyProfile" class="mt-5 space-y-3">
                     <h2 class="text-2xl font-bold mb-4">Company Profile</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-48 gap-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-28 md:gap-x-48 gap-y-4">
                         <p class="flex items-center gap-2">
                             <Building2 class="w-4 h-4 text-gray-600" />
                             <span class="font-semibold">Name:</span> {{ store.stockInfo!.companyProfile.name }}
@@ -117,7 +137,7 @@
                         <p class="flex items-center gap-2">
                             <Banknote class="w-4 h-4 text-gray-600" />
                             <span class="font-semibold">Market Capitalization:</span>
-                            ${{ (store.stockInfo!.companyProfile.marketCapital / 1_000_000_000).toFixed(2) }}B
+                            ${{ (store.stockInfo!.companyProfile.marketCapital / 1000).toFixed(2) }}B
                         </p>
                         <p class="flex items-center gap-2">
                             <Users class="w-4 h-4 text-gray-600" />

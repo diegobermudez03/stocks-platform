@@ -2,6 +2,8 @@ import type { StockModel } from "./StockModel";
 
 export interface FullStockModel{
     stock : StockModel,
+    recommendationScore : number,
+    avrgSentiment : number,
     companyProfile: {
         country : string,
         currency: string,
