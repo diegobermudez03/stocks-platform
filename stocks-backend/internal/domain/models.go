@@ -48,5 +48,5 @@ type StockWithScore struct{
 
 type StockPriceUpdate struct{
 	Symbol 		string 
-
+	Price 		float64
 }

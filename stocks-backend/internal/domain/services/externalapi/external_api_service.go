@@ -4,21 +4,21 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/diegobermudez03/stocks-platform/stocks-backend/internal/domain"
-	"github.com/gorilla/websocket"
 )
 
 type ExternalAPIServiceImpl struct {
 	externalAPIUrl string
 	externalAPIKey string
 	websocketUrl string
-	webSocketChannel chan string
-	suscribers map[string] []chan domain.PriceUpdate
-	suscribersLock sync.RWMutex
+	suscribedStocks map[string]float64
+	readChannel chan string
+	writeChannel chan domain.StockPriceUpdate
+	closeChannel chan bool
 }
 
 func NewExternalAPIService(externalAPIUrl,externalAPIKey, websocketUrl string ) domain.ExternalApiService{
@@ -26,8 +26,8 @@ func NewExternalAPIService(externalAPIUrl,externalAPIKey, websocketUrl string ) 
 		externalAPIUrl: externalAPIUrl,
 		externalAPIKey: externalAPIKey,
 		websocketUrl: websocketUrl,
-		suscribersLock: sync.RWMutex{},
-		suscribers: map[string] []chan domain.PriceUpdate{},
+		suscribedStocks: map[string]float64{},
+		closeChannel:  make(chan bool),
 	}
 }
 
@@ -122,45 +122,14 @@ func (s *ExternalAPIServiceImpl) GetStockSentiment(symbol string)(*domain.Intern
 
 
 /*
-	Method to suscribe to live connections of a stock
+	Method to stablish websocket connection (is the one we can mock)
 */
-func (s *ExternalAPIServiceImpl) LiveSymbolPrice(symbol string)(chan domain.PriceUpdate, error){
-	//if the channel is nil, means that we dont have a websocket connection yet, so we need to create it
-	if s.webSocketChannel == nil{
-		channel, err := s.connectWebSocket()
-		if err != nil{
-			return nil, err
-		}
-		s.webSocketChannel = channel
-	}
-	s.webSocketChannel <- symbol
-	suscriberChannel := make(chan domain.PriceUpdate)
-
-	//ADD THE SUSCRIBER, CRITIC ZONE
-	s.suscribersLock.Lock()
-	slice, ok := s.suscribers[symbol]
-	if !ok{
-		s.suscribers[symbol] = []chan domain.PriceUpdate{}
-		slice = s.suscribers[symbol]
-	}
-	s.suscribers[symbol] = append(slice, suscriberChannel)
-	s.suscribersLock.Unlock()
-	return suscriberChannel, nil
-}
-
-
-/*
-	Internal  method to stablish webSocket connection and return the websocket from where it will listen to
-*/
-func (s *ExternalAPIServiceImpl) connectWebSocket() (chan string, error){
-	channel := make(chan string)
-	var externalError error
+/*func (s *ExternalAPIServiceImpl) StartLiveConnection() (chan string, chan domain.StockPriceUpdate, error){
+	reader := make(chan string)
+	writer := make(chan domain.StockPriceUpdate)
+	var externalError error 
 	wg := sync.WaitGroup{}
 	wg.Add(1)
-
-	/*
-		Here we create the go routine that will handle the connection with the websocket channel
-	*/
 	go func(){
 		url := s.websocketUrl + "?token=" + s.externalAPIKey
 		connection, _, err := websocket.DefaultDialer.Dial(url, nil)
@@ -169,12 +138,12 @@ func (s *ExternalAPIServiceImpl) connectWebSocket() (chan string, error){
 		}
 		wg.Done()
 		defer connection.Close()
-		defer close(channel)
+		defer close(reader)
 		//run go routine for the reader
-		go s.webSocketReader(connection)
+		go s.webSocketReader(connection, writer)
 
 		//continue in this go routine as the writer (suscriber to new symbols)
-		for message := range channel{
+		for message := range reader{
 			suscribeMsg := InternalSuscribeDTO{
 				Type: "suscribe",
 				Symbol: message,
@@ -182,30 +151,32 @@ func (s *ExternalAPIServiceImpl) connectWebSocket() (chan string, error){
 			jsonBytes, _ := json.Marshal(suscribeMsg)
 			//if error when trying to send, probably was already closed, so we end
 			if err := connection.WriteMessage(websocket.TextMessage, jsonBytes); err!= nil{
-				s.webSocketChannel = nil
 				break
 			}
 		}
 	}()
-
 	wg.Wait()
-	return channel, externalError
+	return reader, writer, externalError
 }
+*/
+
+/*
+	To close live websocket connection
+*/
+func (s *ExternalAPIServiceImpl) CloseLiveConnection(){
+	//we send 2 times so that both goroutines get it
+	s.closeChannel <- true 
+	s.closeChannel <- true 
+	s.suscribedStocks = map[string]float64{}
+}
+
 
 /*
 	Websocket reader go routine, this go routine only focus on reading from the websocket and broadcasting
 */
-func (s *ExternalAPIServiceImpl) webSocketReader(connection *websocket.Conn){
+/*func (s *ExternalAPIServiceImpl) webSocketReader(connection *websocket.Conn, channel chan domain.StockPriceUpdate){
 	for{
-		//always at the beginning check if we are empty of suscribers, if thats the case, we close the connection
-		s.suscribersLock.RLock()
-		if len(s.suscribers) == 0{
-			//close connection
-		}
-		s.suscribersLock.RUnlock()
-
 		_, msgBytes, err := connection.ReadMessage()
-		log.Print(string(msgBytes))
 		if err != nil{
 			continue
 		}
@@ -213,53 +184,77 @@ func (s *ExternalAPIServiceImpl) webSocketReader(connection *websocket.Conn){
 		if err := json.Unmarshal(msgBytes, &priceUpdate); err != nil{
 			continue 
 		}
-
-		//deliver update to the suscribers to the stock
-		s.suscribersLock.RLock()
 		for _, update := range priceUpdate.Data{
-			suscribers, ok := s.suscribers[update.S]
-			priceUpdate := domain.PriceUpdate{
+			channel <- domain.StockPriceUpdate{
+				Symbol: update.S,
 				Price: update.P,
 			}
-			//if no suscribers, ommit
-			if !ok{
-				continue 
-			}
-			//send update to all channels
-			for _, suscriber := range suscribers{
-				suscriber <-priceUpdate
-			}
 		}
-		s.suscribersLock.RUnlock()
 	}
 }
-
-
-/*
-	To unsuscribe client
 */
-func(s *ExternalAPIServiceImpl) UnsuscribePriceClient(symbol string, channel chan domain.PriceUpdate){
-	s.suscribersLock.Lock()
-	defer s.suscribersLock.Unlock()
-	slice, ok := s.suscribers[symbol]
-	if !ok{
-		return 
-	}
-	var index int  = -1
-	for i, suscriber := range slice{
-		if suscriber == channel{
-			index = i 
-			break
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////				MOCK WEBSOCKET LIVE IMPLEMENTATION 				/			///////////////
+
+func (s *ExternalAPIServiceImpl) StartLiveConnection() (chan string, chan domain.StockPriceUpdate, error){
+	reader := make(chan string)
+	writer := make(chan domain.StockPriceUpdate)
+
+	//start reader, in this case, it looks for the current real price of the symbol
+	go func(){
+		for{
+			select{
+			case stock :=<-reader:{
+				if _, ok := s.suscribedStocks[stock]; !ok{
+					url := s.externalAPIUrl + "/quote?symbol=" + stock  + "&token=" + s.externalAPIKey
+					response, err := http.Get(url)
+					if err != nil{
+						continue
+					}
+					payload, err := io.ReadAll(response.Body)
+					if err != nil{
+						continue
+					}
+					price := InternalStockPrice{}
+					if err := json.Unmarshal(payload, &price); err != nil{
+						continue
+					}
+					s.suscribedStocks[stock] = price.C 
+					response.Body.Close()
+				}
+			}
+			case <- s.closeChannel:
+				return 
+			}
 		}
-	}
-	if index == -1{
-		return 
-	}
-	slice = append(slice[:index], slice[index+1:]...)
-	//if there are no suscribers, then we remove the whole key
-	if len(slice) == 0{
-		delete(s.suscribers, symbol)
-	}else{
-		s.suscribers[symbol] = slice
-	}
+	}()
+	
+	//start the writer, each 4 seconds will send a price uypdate to all 
+	go func(){
+		ticker := time.NewTicker(2 * time.Second)
+		defer ticker.Stop()
+		for{
+			select {
+			case <- ticker.C:{
+				for stock, currentPrice := range s.suscribedStocks{
+					randomChange := (rand.Float64()*20) - 10
+					currentPrice = currentPrice + randomChange
+					s.suscribedStocks[stock] = currentPrice
+					writer <- domain.StockPriceUpdate{
+						Symbol: stock,
+						Price:  currentPrice,
+					}
+				}
+			}
+			case <- s.closeChannel:
+				return 
+			}
+		}
+	}()
+
+	return reader, writer, nil
 }

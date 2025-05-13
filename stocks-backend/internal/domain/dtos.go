@@ -94,7 +94,7 @@ type RecommendationDTO struct{
 	AvrgSentiment	float64 	`json:"avrg_sentiment"`
 }
 
-type PriceUpdate struct{
+type PriceUpdateDTO struct{
 	Price 	float64	`json:"price"`
 }
 

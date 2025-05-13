@@ -22,14 +22,14 @@ type StocksService interface {
 	GetRatings() ([]RatingDTO, error)
 	GetStockFullData(stockId uuid.UUID) (*StockDataDTO, error)
 	GetRecommendations()([]RecommendationDTO, error)
-	SuscribeStockPrice(stockId uuid.UUID)(chan PriceUpdate, error)
-	UnsuscribeFromStock(stockId uuid.UUID, channel chan PriceUpdate)
+	SuscribeStockPrice(stockId uuid.UUID)(chan PriceUpdateDTO, error)
+	UnsuscribeFromStock(stockId uuid.UUID, channel chan PriceUpdateDTO)
 }
 
 type ExternalApiService interface{
 	GetCompanyProfile(symbol string)(*CompanyProfileDTO, error)
 	GetLatestNews(symbol string)([]NewsDTO, error)
 	GetStockSentiment(symbol string)(*InternalSentimentDTO, error)
-	LiveSymbolPrice(symbol string)(chan PriceUpdate, error)
-	UnsuscribePriceClient(symbol string, channel chan PriceUpdate)
+	StartLiveConnection() (chan string, chan StockPriceUpdate, error)
+	CloseLiveConnection()
 }

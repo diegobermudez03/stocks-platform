@@ -1,6 +1,7 @@
 package stocks
 
 import (
+	"sync"
 	"time"
 
 	"github.com/diegobermudez03/stocks-platform/stocks-backend/internal/domain"
@@ -15,6 +16,11 @@ type StocksServiceImpl struct {
 	recommendationsCache []domain.RecommendationDTO
 	lastCacheSaved time.Time
 	externalAPI 	domain.ExternalApiService
+	suscribers 		map[string] []chan domain.PriceUpdateDTO
+	writerChannel chan string 
+	readerChannel chan domain.StockPriceUpdate
+	suscribersLock sync.RWMutex
+
 }
 
 func NewStocksService(repo repository.StocksRepo, apiUrl, apiToken string, externalAPI domain.ExternalApiService) domain.StocksService{
@@ -23,6 +29,8 @@ func NewStocksService(repo repository.StocksRepo, apiUrl, apiToken string, exter
 		apiUrl: apiUrl,
 		apiToken: apiToken,
 		externalAPI: externalAPI,
+		suscribers: map[string] []chan domain.PriceUpdateDTO{},
+		suscribersLock: sync.RWMutex{},
 	}
 }
 
@@ -201,27 +209,122 @@ func (s *StocksServiceImpl) GetRecommendations()([]domain.RecommendationDTO, err
 /*
 	Method to suscribe to live updatyes of a stock
 */
-func (s *StocksServiceImpl) SuscribeStockPrice(stockId uuid.UUID)(chan domain.PriceUpdate, error){
+func (s *StocksServiceImpl) SuscribeStockPrice(stockId uuid.UUID)(chan domain.PriceUpdateDTO, error){
 	stock, err := s.repo.GetStockById(stockId)
 	if err != nil{
 		return nil, domain.ErrInvalidStockId
 	}
-	channel, err := s.externalAPI.LiveSymbolPrice(stock.Ticker)
-	if err != nil{
-		return nil, domain.ErrUnableToLiveConnection
+
+	//if we havent started a connection then we start it
+	if s.readerChannel == nil && s.writerChannel == nil{
+		if err := s.connectLiveWithExternalAPI(); err != nil{
+			return nil, domain.ErrUnableToLiveConnection
+		}
 	}
-	return channel, nil
+	s.suscribersLock.Lock()
+	//add suscriber to the respective suscribers stock
+	slice, ok := s.suscribers[stock.Ticker]
+	if !ok{
+		//send suscribe petition
+		s.writerChannel <- stock.Ticker
+		slice = []chan domain.PriceUpdateDTO{}
+	}
+	priceChannel := make(chan domain.PriceUpdateDTO)
+	slice = append(slice, priceChannel)
+	s.suscribers[stock.Ticker] = slice
+	s.suscribersLock.Unlock()
+	return priceChannel, nil
 }
 
 /*
 	Method to unsuscribe from a live price connection
 */
-func (s *StocksServiceImpl) UnsuscribeFromStock(stockId uuid.UUID, channel chan domain.PriceUpdate){
+func (s *StocksServiceImpl) UnsuscribeFromStock(stockId uuid.UUID, channel chan domain.PriceUpdateDTO){
 	stock, err := s.repo.GetStockById(stockId)
 	if err != nil{
 		return 
 	}
-	s.externalAPI.UnsuscribePriceClient(stock.Ticker, channel)
+	s.suscribersLock.Lock()
+	defer s.suscribersLock.Unlock()
+	slice, ok := s.suscribers[stock.Ticker]
+	if !ok{
+		return 
+	}
+	var index int  = -1
+	for i, suscriber := range slice{
+		if suscriber == channel{
+			index = i 
+			break
+		}
+	}
+	if index == -1{
+		return 
+	}
+	slice = append(slice[:index], slice[index+1:]...)
+	//if there are no suscribers, then we remove the whole key
+	if len(slice) == 0{
+		delete(s.suscribers, stock.Ticker)
+		//if we were left with no suscribers, we close the connection with the external API
+		if len(s.suscribers) == 0{
+			s.externalAPI.CloseLiveConnection()
+			close(s.readerChannel)
+			close(s.writerChannel)
+			s.readerChannel = nil 
+			s.writerChannel = nil
+		}
+	}else{
+		s.suscribers[stock.Ticker] = slice
+	}
+}
+
+
+/*
+	Internal method to stablish live connection with external API
+*/
+func (s *StocksServiceImpl) connectLiveWithExternalAPI()error{
+	var externalErr error 
+	wg := sync.WaitGroup{}
+
+	wg.Add(1)
+	go func(){
+		//at the end we must close all active connections
+		defer func(){
+			s.suscribersLock.Lock()
+			for _, suscribers := range s.suscribers{
+				for _, suscriber := range suscribers{
+					close(suscriber)
+				}
+			}
+			s.suscribers = map[string][]chan domain.PriceUpdateDTO{}
+			s.suscribersLock.Unlock()
+		}()
+		writer, reader, err := s.externalAPI.StartLiveConnection()
+		if err != nil{
+			externalErr = err 
+		}
+		s.writerChannel = writer
+		s.readerChannel = reader
+		wg.Done()
+		
+		//start writer, broadcast messages received
+		for message := range reader{
+			s.suscribersLock.RLock()
+			suscribers, ok := s.suscribers[message.Symbol]
+			if !ok{
+				s.suscribersLock.RUnlock()
+				continue
+			}
+			for _, suscriber := range suscribers{
+				suscriber <- domain.PriceUpdateDTO{
+					Price: message.Price,
+				}
+			}
+			s.suscribersLock.RUnlock()
+		}
+
+	}()
+	wg.Wait()
+	return externalErr
 }
 
 /*

@@ -179,21 +179,23 @@ func (s *RestAPIServer) LivePriceUpdates(w http.ResponseWriter, r *http.Request)
 
 	//channel to detect connection closing
 	clientGone := r.Context().Done()
-	select{
-	case <- clientGone:
-		s.service.UnsuscribeFromStock(uuidId, channel)
-		return 
-	case update, ok :=<-channel:{
-		//if for any reason the channel was closed, then we close the SSE connection
-		if !ok{
-			w.Write([]byte("event:close\ndata: Connection closing\n\n"))
-			flusher.Flush()
+	for {
+		select{
+		case <- clientGone:
+			s.service.UnsuscribeFromStock(uuidId, channel)
 			return 
+		case update, ok :=<-channel:{
+			//if for any reason the channel was closed, then we close the SSE connection
+			if !ok{
+				w.Write([]byte("event:close\ndata: Connection closing\n\n"))
+				flusher.Flush()
+				return 
+			}
+			//if it was an update, we send the update message
+			message := fmt.Sprintf("data: %v\n\n", update.Price)
+			w.Write([]byte(message))
+			flusher.Flush()
 		}
-		//if it was an update, we send the update message
-		message := fmt.Sprintf("data: %v\n\n", update.Price)
-		w.Write([]byte(message))
-		flusher.Flush()
-	}
+		}
 	}
 }
