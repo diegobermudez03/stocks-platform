@@ -207,7 +207,10 @@ func (s *ExternalAPIServiceImpl) StartLiveConnection() (chan string, chan domain
 	go func(){
 		for{
 			select{
-			case stock :=<-reader:{
+			case stock, ok :=<-reader:{
+				if !ok{
+					return 
+				}
 				if _, ok := s.suscribedStocks[stock]; !ok{
 					url := s.externalAPIUrl + "/quote?symbol=" + stock  + "&token=" + s.externalAPIKey
 					response, err := http.Get(url)
@@ -242,6 +245,9 @@ func (s *ExternalAPIServiceImpl) StartLiveConnection() (chan string, chan domain
 				for stock, currentPrice := range s.suscribedStocks{
 					randomChange := (rand.Float64()*5) - 2.5
 					currentPrice = currentPrice + randomChange
+					if currentPrice < 0{
+						currentPrice *= -1
+					}
 					s.suscribedStocks[stock] = currentPrice
 					writer <- domain.StockPriceUpdate{
 						Symbol: stock,

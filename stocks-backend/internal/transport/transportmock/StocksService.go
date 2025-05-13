@@ -182,6 +182,41 @@ func (_m *StocksService) PopulateDatabase() error {
 	return r0
 }
 
+// SuscribeStockPrice provides a mock function with given fields: stockId
+func (_m *StocksService) SuscribeStockPrice(stockId uuid.UUID) (chan domain.PriceUpdateDTO, error) {
+	ret := _m.Called(stockId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SuscribeStockPrice")
+	}
+
+	var r0 chan domain.PriceUpdateDTO
+	var r1 error
+	if rf, ok := ret.Get(0).(func(uuid.UUID) (chan domain.PriceUpdateDTO, error)); ok {
+		return rf(stockId)
+	}
+	if rf, ok := ret.Get(0).(func(uuid.UUID) chan domain.PriceUpdateDTO); ok {
+		r0 = rf(stockId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(chan domain.PriceUpdateDTO)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(uuid.UUID) error); ok {
+		r1 = rf(stockId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UnsuscribeFromStock provides a mock function with given fields: stockId, channel
+func (_m *StocksService) UnsuscribeFromStock(stockId uuid.UUID, channel chan domain.PriceUpdateDTO) {
+	_m.Called(stockId, channel)
+}
+
 // NewStocksService creates a new instance of StocksService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewStocksService(t interface {

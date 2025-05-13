@@ -308,6 +308,7 @@ func TestStocksServiceImpl_GetStockFullData(t *testing.T) {
 		externalAPIMock := mocks.NewExternalApiService(t)
 		service := NewStocksService(repoMock, "", "", externalAPIMock)
 
+		externalAPIMock.On("GetStockSentiment", "TEST").Return(&domain.InternalSentimentDTO{}, nil).Once()
 		repoMock.On("GetStockById", stockID).Return(mockStockModel, nil).Once()
 		externalAPIMock.On("GetCompanyProfile", "TEST").Return(mockCompanyProfile, nil).Once()
 		externalAPIMock.On("GetLatestNews", "TEST").Return(mockNews, nil).Once()
@@ -372,6 +373,7 @@ func TestStocksServiceImpl_GetStockFullData(t *testing.T) {
 		service := NewStocksService(repoMock, "", "", externalAPIMock)
 
 		repoMock.On("GetStockById", stockID).Return(mockStockModel, nil).Once()
+		externalAPIMock.On("GetStockSentiment", "TEST").Return(&domain.InternalSentimentDTO{}, nil).Once()
 		externalAPIMock.On("GetCompanyProfile", "TEST").Return(mockCompanyProfile, nil).Once()
 		apiError := errors.New("external API error fetching news")
 		externalAPIMock.On("GetLatestNews", "TEST").Return(nil, apiError).Once()

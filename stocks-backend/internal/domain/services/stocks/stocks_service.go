@@ -315,8 +315,10 @@ func (s *StocksServiceImpl) connectLiveWithExternalAPI()error{
 				continue
 			}
 			for _, suscriber := range suscribers{
-				suscriber <- domain.PriceUpdateDTO{
-					Price: message.Price,
+				//adding timeout in case for any reason there's no one listeing on the channel, avoid deadlock
+				select{
+				case suscriber <- domain.PriceUpdateDTO{Price: message.Price}:
+				case <- time.After(1 * time.Second):
 				}
 			}
 			s.suscribersLock.RUnlock()
