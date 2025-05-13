@@ -2,7 +2,6 @@ import type { FullStockModel, NewsModel } from "@/models/FullStockModel";
 import type { ParamModel } from "@/models/ParamModel";
 import type { RecommendationModel } from "@/models/RecommendationModel";
 import type { StockModel, StocksWithCount } from "@/models/StockModel"
-import {recommendationsMock} from '@/services/mocks'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 const UNKNOWN_ERROR = "Internal Unknown Error"
@@ -241,4 +240,20 @@ export async function getRecommendations(): Promise<Result<RecommendationModel[]
         error: UNKNOWN_ERROR
       }
     }
-  }
+}
+
+
+export function getLivePrice(stockId: string,callback: (price: number) => void): ()=>void{
+    const eventSource = new EventSource(`${API_BASE_URL}/stocks/${stockId}/live`)
+    console.log("openning connection for " + stockId)
+    eventSource.onmessage = (event)=>{
+        const num = Number(event.data)
+        if(!isNaN(num)){
+            callback(num)
+        }
+    }
+    return function(){
+        console.log("closing connection for " + stockId)
+        eventSource.close()
+    }
+}

@@ -82,7 +82,6 @@ function pauseScroll(){
 }
 
 function startScroll(){
-  console.log('starting scroll', scrollContainer.value)
   if (!scrollContainer.value) return
   scrollInterval = setInterval(() => {
     const el = scrollContainer.value

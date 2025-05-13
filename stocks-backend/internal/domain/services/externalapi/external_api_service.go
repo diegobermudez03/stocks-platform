@@ -3,7 +3,6 @@ package externalapi
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"math/rand"
 	"net/http"
 	"time"
@@ -235,13 +234,13 @@ func (s *ExternalAPIServiceImpl) StartLiveConnection() (chan string, chan domain
 	
 	//start the writer, each 4 seconds will send a price uypdate to all 
 	go func(){
-		ticker := time.NewTicker(2 * time.Second)
+		ticker := time.NewTicker(5 * time.Second)
 		defer ticker.Stop()
 		for{
 			select {
 			case <- ticker.C:{
 				for stock, currentPrice := range s.suscribedStocks{
-					randomChange := (rand.Float64()*20) - 10
+					randomChange := (rand.Float64()*5) - 2.5
 					currentPrice = currentPrice + randomChange
 					s.suscribedStocks[stock] = currentPrice
 					writer <- domain.StockPriceUpdate{

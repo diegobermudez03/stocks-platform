@@ -25,7 +25,10 @@
         <div class="flex flex-col md:flex-row w-full px-4 lg:px-20 xl:px-32 2xl:px-48 items-start gap-8">
             <img class="w-full md:w-2/6 h-auto  object-contain rounded-lg border" :src="store.stockInfo?.companyProfile.logo"/>
             <div class=" flex flex-col">
-                <h1 class=" text-6xl font-bold">{{ store.stockInfo?.stock.ticker }}</h1>
+                <div class=" flex flex-row items-end justify-between">
+                    <h1 class=" text-6xl font-bold">{{ store.stockInfo?.stock.ticker }}</h1>
+                    <h1 v-if="store.currentPrice" class=" text-4xl text-green-700">${{ store.currentPrice.toFixed(2) }}</h1>
+                </div>
                 <!--TAB NAVIGATON MENU-->
                 <div class=" flex flex-wrap gap-2 border-b-2 border-gray-400 w-full mt-5">
                     <button v-for="tab in store.tabs"
@@ -183,7 +186,7 @@
 import ErrorComponent from '@/components/ErrorComponent.vue';
 import RecommendationsComponent from '@/components/RecommendationsComponent.vue';
 import {fullStockStore} from '@/stores/FullStockStore';
-import { onMounted, watch } from 'vue';
+import { onMounted, onUnmounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import {
   Building2,
@@ -204,14 +207,21 @@ import {
 
 const store = fullStockStore();
 const route = useRoute()
-
-onMounted(() => {
-    const stockId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
-    store.loadStock(stockId)
-})
+var outerCallback : (()=>void) | null = null
 
 watch(() => route.params.id, (newId) => {
     const stockId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
     store.loadStock(stockId)
+    if(outerCallback){
+        outerCallback()
+    }
+    const closeCallback = store.getPrice(stockId)
+    outerCallback = closeCallback
+}, {immediate: true})
+
+onUnmounted(()=>{
+    if(outerCallback){
+        outerCallback()
+    }
 })
 </script>

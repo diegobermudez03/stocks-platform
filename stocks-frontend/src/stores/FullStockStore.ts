@@ -1,7 +1,7 @@
 import type { ErrorModel } from "@/models/ErrorModel";
 import type { FullStockModel } from "@/models/FullStockModel";
 import router from "@/router";
-import { getFullStock } from "@/services/stockServices";
+import { getFullStock, getLivePrice } from "@/services/stockServices";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useRoute } from "vue-router";
@@ -12,6 +12,7 @@ export const fullStockStore = defineStore('fullStock',()=>{
     const errorMessage = ref<ErrorModel | null>(null)
     const stockInfo = ref<FullStockModel | null>(null)
     const tabSelected = ref<string>("stock")
+    const currentPrice = ref<number | null>(null)
 
     async function backToHome(){
         router.push('/')
@@ -33,6 +34,13 @@ export const fullStockStore = defineStore('fullStock',()=>{
         loading.value = false
     }
 
+    function getPrice(id:string): ()=>void{
+        const closeCallback = getLivePrice(id, (price)=>{
+            currentPrice.value = price
+        })
+        return closeCallback
+    }
+
     interface Tab{
         name: string,
         label: string
@@ -44,6 +52,6 @@ export const fullStockStore = defineStore('fullStock',()=>{
     const tabs=[{name: 'stock', label: 'Stock Info'}, {name:'company',label:'Company Profile'},{name: 'news', label:"Related News"}]
 
     return {
-        backToHome, loadStock, stockInfo, errorMessage, loading, tabSelected, changeTab, tabs
+        backToHome, loadStock, stockInfo, errorMessage, loading, tabSelected, changeTab, tabs, currentPrice, getPrice
     }
 })
