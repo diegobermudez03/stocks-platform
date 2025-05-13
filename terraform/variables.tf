@@ -42,3 +42,7 @@ variable "external_api_key"{
     type = string 
     sensitive = true
 }
+variable "websocket_api_url"{
+    type = string 
+    sensitive = true
+}

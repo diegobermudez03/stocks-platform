@@ -26,7 +26,8 @@ module "app_runner_backend"{
     DB_DBNAME = module.db_dbname.arn
     DB_SSL_MODE = module.db_ssl_mode.arn
     EXTERNAL_API_URL = module.external_api_url.arn
-    EXTERNAL_API_KEY = module.external_api_key.arn    
+    EXTERNAL_API_KEY = module.external_api_key.arn
+    WEBSOCKET_API_URL = module.websocket_api_url.arn
 }
 
 module "frontend_bucket"{

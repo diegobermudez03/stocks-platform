@@ -24,6 +24,7 @@ resource "aws_apprunner_service" "backend" {
           DB_SSL_MODE = var.DB_SSL_MODE
           EXTERNAL_API_URL = var.EXTERNAL_API_URL
           EXTERNAL_API_KEY = var.EXTERNAL_API_KEY
+          WEBSOCKET_API_URL = var.WEBSOCKET_API_URL
         }
         runtime_environment_variables = {
           PORT = var.PORT

@@ -57,3 +57,9 @@ module "external_api_key"{
     var_name = "EXTERNAL_API_KEY"
     var_value = var.external_api_key
 }
+
+module "websocket_api_url"{
+    source = "./modules/secret"
+    var_name = "WEBSOCKET_API_URL"
+    var_value = var.websocket_api_url
+}

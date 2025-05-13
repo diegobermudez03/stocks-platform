@@ -47,3 +47,7 @@ variable "EXTERNAL_API_URL"{
 variable "EXTERNAL_API_KEY"{
     type = string 
 }
+
+variable "WEBSOCKET_API_URL"{
+    type = string
+}

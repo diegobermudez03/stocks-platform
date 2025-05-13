@@ -10,6 +10,7 @@ import (
 
 	"github.com/diegobermudez03/stocks-platform/stocks-backend/internal/domain"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/google/uuid"
 )
@@ -52,6 +53,7 @@ func (s *RestAPIServer) Run() error{
         AllowCredentials: true,
         MaxAge:           300, 
     }))
+	r.Use(middleware.Logger)
 	r.Mount("/api/v1", router)
 	return http.ListenAndServe(fmt.Sprintf("0.0.0.0:%s", s.config.Port), r)
 }
