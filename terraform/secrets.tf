@@ -63,3 +63,9 @@ module "websocket_api_url"{
     var_name = "WEBSOCKET_API_URL"
     var_value = var.websocket_api_url
 }
+
+module "all_or_nothing"{
+    source = "./modules/secret"
+    var_name = "ALL_OR_NOTHING"
+    var_value = var.all_or_nothing
+}

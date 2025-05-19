@@ -16,7 +16,7 @@ var (
 )
 
 type StocksService interface {
-	PopulateDatabase() error
+	PopulateDatabase(allOrNothing int) error
 	GetStocks(filter GetStocksFilter) (*StocksReturnDTO, error)
 	GetActions() ([]ActionDTO, error)
 	GetRatings() ([]RatingDTO, error)

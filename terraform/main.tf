@@ -28,6 +28,7 @@ module "app_runner_backend"{
     EXTERNAL_API_URL = module.external_api_url.arn
     EXTERNAL_API_KEY = module.external_api_key.arn
     WEBSOCKET_API_URL = module.websocket_api_url.arn
+    ALL_OR_NOTHING = module.all_or_nothing.arn
 }
 
 module "frontend_bucket"{

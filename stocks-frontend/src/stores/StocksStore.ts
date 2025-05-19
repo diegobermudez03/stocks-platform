@@ -55,6 +55,9 @@ export const stocksStore = defineStore('stocks', ()=>{
     const actions = ref<ParamModel[]>([])
     const ratings = ref<ParamModel[]>([])
 
+    //debounce
+    const timeout = ref<number | null>(null)
+
     //errors
     const errorMessage = ref<ErrorModel | null>(null)
     const filterError = ref<string | null>(null)
@@ -74,6 +77,9 @@ export const stocksStore = defineStore('stocks', ()=>{
     
 
     async function retrieveStocks(){
+        if(timeout.value){
+            clearTimeout(timeout.value)
+        }
         loading.value = true
         openFilter.value= null
         const response = await getStocks({
@@ -180,7 +186,7 @@ export const stocksStore = defineStore('stocks', ()=>{
         if (searchQuery.value) {
             filters.push({
                 label: `Search: ${searchQuery.value}`,
-                onRemove: () => (searchQuery.value = '')
+                onRemove: () => {searchQueryTmp.value = "" ; searchQuery.value = ''}
             });
         }
 
@@ -230,6 +236,16 @@ export const stocksStore = defineStore('stocks', ()=>{
             id: id
         }})
     }
+
+    //debounce implemented correctly
+    async function debounce(){
+        if (timeout.value) {
+            clearTimeout(timeout.value);
+        }
+        timeout.value = setTimeout(()=>{
+            submitSearchFilter()
+        }, 500)
+    }
     return {
         stocks, size, page, loading, errorMessage, retrieveStocks, 
         pages, changePage, getParams, loadingFilter, actions, ratings, 
@@ -237,6 +253,6 @@ export const stocksStore = defineStore('stocks', ()=>{
         searchQuery, fromPriceTmp, toPriceTmp, selectedRatingsFrom, selectedRatingsTo, selectedActions,
         toggleFilter, openFilter, activeFilters, greenRatings, yellowRatings, orangeRatings, redRatings,openStock,
         totalRecords, openSort, sortOptions, selectedSort, selectSortType, switchSortMenu, submitSearchFilter,
-        searchQueryTmp, submitPriceRange
+        searchQueryTmp, submitPriceRange, debounce
     }
 })

@@ -51,3 +51,7 @@ variable "EXTERNAL_API_KEY"{
 variable "WEBSOCKET_API_URL"{
     type = string
 }
+
+variable "ALL_OR_NOTHING"{
+    type = number
+}

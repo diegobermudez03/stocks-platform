@@ -9,6 +9,7 @@
                     placeholder="Search for a stock or company"
                     v-model="store.searchQueryTmp"
                     @keydown.enter="store.submitSearchFilter"
+                    @input="store.debounce"
                 >
                 <button type="submit" class=" relative p-2 bg-white rounded-full"  @click="store.submitSearchFilter">
                     <Search class="w-6 h-6 text-gray-800" />

@@ -2,8 +2,8 @@ package stocks
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -16,8 +16,9 @@ import (
 /*
 	This is the method that is called if the db isnt populated yet, its responsible from making the HTTP calls til fill all the db
 */
-func (s *StocksServiceImpl) populateWithAPI() error {
+func (s *StocksServiceImpl) populateWithAPI(allOrNothing int) error {
 	client := &http.Client{}
+	alreadyVisited := map[string]bool{}
 	var nextPage string
 	for {
 		//get the url with the param if we have one (all iterations except the first one)
@@ -26,31 +27,37 @@ func (s *StocksServiceImpl) populateWithAPI() error {
 			url = url + "?next_page=" + nextPage
 		}
 		req, err := http.NewRequest("GET", url, nil)
-		if err != nil {
+		if err != nil{
 			return domain.ErrMakingHttpCall
 		}
 		//set the auth header and make the http call
 		req.Header.Set("Authorization", "Bearer "+s.apiToken)
 		resp, err := client.Do(req)
-		if err != nil {
+		if err != nil  && allOrNothing == 1{
 			return domain.ErrMakingHttpCall
 		}
 		defer resp.Body.Close()
 		//unmarshal the received json
 		body, _ := io.ReadAll(resp.Body)
 		response := StocksAPIResponseDTO{}
-		if err := json.Unmarshal(body, &response); err != nil{
+		if err := json.Unmarshal(body, &response); err != nil  && allOrNothing == 1{
 			return domain.ErrInvalidPayloadInHttpCall
 		}
 		nextPage = response.NextPage
-		fmt.Println(nextPage)
+		log.Println(nextPage)
 		//save the bunch of stocks in the DB
-		if err := s.saveBunchOfRecords(response.Items); err !=nil{
+		if err := s.saveBunchOfRecords(response.Items); err !=nil  && allOrNothing == 1{
 			return err
 		}
 		//if we reach the end then we break
 		if nextPage == ""{
 			break
+		}else{
+			//detect cycles
+			if _, ok := alreadyVisited[nextPage]; ok{
+				break
+			}
+			alreadyVisited[nextPage] = true
 		}
 	}
 	return nil

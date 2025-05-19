@@ -25,6 +25,7 @@ resource "aws_apprunner_service" "backend" {
           EXTERNAL_API_URL = var.EXTERNAL_API_URL
           EXTERNAL_API_KEY = var.EXTERNAL_API_KEY
           WEBSOCKET_API_URL = var.WEBSOCKET_API_URL
+          ALL_OR_NOTHING = var.ALL_OR_NOTHING
         }
         runtime_environment_variables = {
           PORT = var.PORT

@@ -46,3 +46,8 @@ variable "websocket_api_url"{
     type = string 
     sensitive = true
 }
+
+variable "all_or_nothing"{
+    type = number
+    sensitive = false
+}

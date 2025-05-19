@@ -164,17 +164,17 @@ func (_m *StocksService) GetStocks(filter domain.GetStocksFilter) (*domain.Stock
 	return r0, r1
 }
 
-// PopulateDatabase provides a mock function with no fields
-func (_m *StocksService) PopulateDatabase() error {
-	ret := _m.Called()
+// PopulateDatabase provides a mock function with given fields: allOrNothing
+func (_m *StocksService) PopulateDatabase(allOrNothing int) error {
+	ret := _m.Called(allOrNothing)
 
 	if len(ret) == 0 {
 		panic("no return value specified for PopulateDatabase")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func() error); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(int) error); ok {
+		r0 = rf(allOrNothing)
 	} else {
 		r0 = ret.Error(0)
 	}
